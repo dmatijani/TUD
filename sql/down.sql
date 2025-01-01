@@ -1,5 +1,11 @@
 BEGIN TRANSACTION;
 
+-- Okidači (i funkcije)
+
+DROP TRIGGER update_nova_verzija ON verzija_dokumenta;
+
+DROP FUNCTION update_nove_verzije();
+
 -- Funkcije
 
 DROP FUNCTION nova_datoteka(TEXT, TEXT);

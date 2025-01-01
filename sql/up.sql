@@ -39,8 +39,6 @@ CREATE TABLE datoteka (
 
 CREATE TABLE dokument (
     id SERIAL PRIMARY KEY,
-    datoteka_id INT REFERENCES datoteka(id)
-    ON UPDATE CASCADE ON DELETE RESTRICT,
     naziv VARCHAR(255) NOT NULL,
     opis TEXT,
     dodatno JSON NOT NULL DEFAULT '{}'::JSON,
@@ -50,11 +48,12 @@ CREATE TABLE dokument (
 CREATE TABLE verzija_dokumenta (
     dokument_id INT REFERENCES dokument(id)
     ON UPDATE CASCADE ON DELETE RESTRICT,
+    vrijedi TSRANGE NOT NULL DEFAULT tsrange(NOW()::TIMESTAMP, 'infinity'::TIMESTAMP),
     verzija INT NOT NULL DEFAULT 1,
     datoteka_id INT REFERENCES datoteka(id),
-    vrijedi TSRANGE NOT NULL DEFAULT tsrange(NOW()::TIMESTAMP, 'infinity'::TIMESTAMP),
     finalna BOOLEAN NOT NULL DEFAULT FALSE,
-    PRIMARY KEY (dokument_id, verzija)
+    napomena TEXT,
+    PRIMARY KEY (dokument_id, vrijedi)
 );
 
 CREATE TABLE grupa (
@@ -133,4 +132,60 @@ AS $$
 $$
 LANGUAGE plpgsql;
 
+-- Okidači (i funkcije)
+
+CREATE OR REPLACE FUNCTION update_nove_verzije()
+RETURNS TRIGGER
+AS $$
+    DECLARE
+        prethodna_verzija INT;
+    BEGIN
+        SELECT verzija INTO prethodna_verzija
+        FROM verzija_dokumenta
+        WHERE dokument_id = NEW.dokument_id
+        AND UPPER(vrijedi) = 'infinity'::TIMESTAMP;
+
+        UPDATE verzija_dokumenta
+        SET vrijedi = tsrange(
+            LOWER(vrijedi)::TIMESTAMP,
+            NOW()::TIMESTAMP
+        )
+        WHERE dokument_id = NEW.dokument_id
+        AND UPPER(vrijedi) = 'infinity'::TIMESTAMP;
+
+        INSERT INTO verzija_dokumenta (dokument_id, verzija, datoteka_id, finalna)
+        VALUES (
+            NEW.dokument_id,
+            prethodna_verzija + 1,
+            NEW.datoteka_id,
+            NEW.finalna
+        );
+        RETURN null;
+    END;
+$$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER update_nova_verzija
+BEFORE UPDATE
+ON verzija_dokumenta
+FOR EACH ROW
+WHEN (pg_trigger_depth() = 0
+AND UPPER(OLD.vrijedi) = 'infinity'::TIMESTAMP)
+EXECUTE PROCEDURE update_nove_verzije();
+
 COMMIT;
+
+
+
+BEGIN TRANSACTION;
+SELECT nova_datoteka('mic', '/tmp/xiaomimi.jpg');
+SELECT nova_datoteka('cucko', '/tmp/cucko_export.jpg');
+SELECT nova_datoteka('banana', '/tmp/banana');
+INSERT INTO dokument (naziv, opis, vrsta) VALUES ('probni', 'ovo je probni dokument', 'OSTALO');
+COMMIT;
+
+
+
+TABLE datoteka;
+TABLE dokument;
+TABLE verzija_dokumenta;
