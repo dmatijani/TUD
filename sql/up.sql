@@ -134,6 +134,48 @@ LANGUAGE plpgsql;
 
 -- Okidači (i funkcije)
 
+CREATE OR REPLACE FUNCTION insert_nove_verzije()
+RETURNS TRIGGER
+AS $$
+    DECLARE
+        postoji BOOLEAN;
+        prethodna_verzija INT;
+    BEGIN
+        postoji := EXISTS(
+            SELECT * FROM verzija_dokumenta
+            WHERE dokument_id = NEW.dokument_id
+        );
+        IF NOT postoji THEN
+            RETURN NEW;
+        ELSE
+            SELECT verzija INTO prethodna_verzija
+            FROM verzija_dokumenta
+            WHERE dokument_id = NEW.dokument_id
+            AND UPPER(vrijedi) = 'infinity'::TIMESTAMP;
+
+            UPDATE verzija_dokumenta
+            SET vrijedi = tsrange(
+                LOWER(vrijedi)::TIMESTAMP,
+                NOW()::TIMESTAMP
+            )
+            WHERE dokument_id = NEW.dokument_id
+            AND UPPER(vrijedi) = 'infinity'::TIMESTAMP;
+
+            NEW.verzija = prethodna_verzija + 1;
+        END IF;
+
+        RETURN NEW;
+    END;
+$$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER insert_nova_verzija
+BEFORE INSERT
+ON verzija_dokumenta
+FOR EACH ROW
+WHEN (pg_trigger_depth() = 0)
+EXECUTE PROCEDURE insert_nove_verzije();
+
 CREATE OR REPLACE FUNCTION update_nove_verzije()
 RETURNS TRIGGER
 AS $$

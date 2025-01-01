@@ -6,6 +6,10 @@ DROP TRIGGER update_nova_verzija ON verzija_dokumenta;
 
 DROP FUNCTION update_nove_verzije();
 
+DROP TRIGGER insert_nova_verzija ON verzija_dokumenta;
+
+DROP FUNCTION insert_nove_verzije();
+
 -- Funkcije
 
 DROP FUNCTION nova_datoteka(TEXT, TEXT);
