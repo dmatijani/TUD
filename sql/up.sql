@@ -87,8 +87,7 @@ CREATE TYPE radnja AS ENUM (
 );
 
 CREATE TABLE pravo (
-    id SERIAL PRIMARY KEY,
-    naziv VARCHAR(100) NOT NULL,
+    naziv TEXT PRIMARY KEY,
     radnje radnja[] NOT NULL
 );
 
@@ -97,7 +96,7 @@ CREATE TABLE pristup_korisnik (
     ON UPDATE CASCADE ON DELETE RESTRICT,
     dokument_id INT REFERENCES dokument(id)
     ON UPDATE CASCADE ON DELETE RESTRICT,
-    pravo_id INT REFERENCES pravo(id),
+    pravo TEXT REFERENCES pravo(naziv),
     PRIMARY KEY (korisnik_id, dokument_id)
 );
 
@@ -106,7 +105,7 @@ CREATE TABLE pristup_grupa (
     ON UPDATE CASCADE ON DELETE RESTRICT,
     dokument_id INT REFERENCES dokument(id)
     ON UPDATE CASCADE ON DELETE RESTRICT,
-    pravo_id INT REFERENCES pravo(id),
+    pravo TEXT REFERENCES pravo(naziv),
     PRIMARY KEY (grupa_id, dokument_id)
 );
 
@@ -218,19 +217,25 @@ FOR EACH ROW
 WHEN (pg_trigger_depth() = 0)
 EXECUTE PROCEDURE update_nove_verzije();
 
+-- Podaci
+
+INSERT INTO korisnik (ime, prezime, email, korime, lozinka_hash) VALUES (
+    'Običan',
+    'Korisnik',
+    'obicankorisnik@nekimail',
+    'obican',
+    encode(sha256('obican'), 'hex')
+);
+
+INSERT INTO pravo VALUES (
+    'vlasnik',
+    '{"create", "read", "update", "delete"}'
+);
+
+INSERT INTO pravo VALUES (
+    'citanje',
+    '{"read"}'
+);
+
+
 COMMIT;
-
-
-
-BEGIN TRANSACTION;
-SELECT nova_datoteka('mic', '/tmp/xiaomimi.jpg');
-SELECT nova_datoteka('cucko', '/tmp/cucko_export.jpg');
-SELECT nova_datoteka('banana', '/tmp/banana');
-INSERT INTO dokument (naziv, opis, vrsta) VALUES ('probni', 'ovo je probni dokument', 'OSTALO');
-COMMIT;
-
-
-
-TABLE datoteka;
-TABLE dokument;
-TABLE verzija_dokumenta;
