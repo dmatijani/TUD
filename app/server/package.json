@@ -1,0 +1,17 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "main": "server.mjs",
+  "scripts": {
+    "pripremi": "npm link --save express cors express-session",
+    "start": "node server.mjs"
+  },
+  "author": "David Matijanić",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "cors": "file:../../../../../../../../../../../../usr/lib/node_modules/cors",
+    "express": "file:../../../../../../../../../../../../usr/lib/node_modules/express",
+    "express-session": "file:../../../../../../../../../../../../usr/lib/node_modules/express-session"
+  }
+}
