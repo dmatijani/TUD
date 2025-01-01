@@ -140,26 +140,30 @@ AS $$
     DECLARE
         prethodna_verzija INT;
     BEGIN
-        SELECT verzija INTO prethodna_verzija
-        FROM verzija_dokumenta
-        WHERE dokument_id = NEW.dokument_id
-        AND UPPER(vrijedi) = 'infinity'::TIMESTAMP;
+        IF UPPER(OLD.vrijedi) = 'infinity'::TIMESTAMP THEN
+            SELECT verzija INTO prethodna_verzija
+            FROM verzija_dokumenta
+            WHERE dokument_id = NEW.dokument_id
+            AND UPPER(vrijedi) = 'infinity'::TIMESTAMP;
 
-        UPDATE verzija_dokumenta
-        SET vrijedi = tsrange(
-            LOWER(vrijedi)::TIMESTAMP,
-            NOW()::TIMESTAMP
-        )
-        WHERE dokument_id = NEW.dokument_id
-        AND UPPER(vrijedi) = 'infinity'::TIMESTAMP;
+            UPDATE verzija_dokumenta
+            SET vrijedi = tsrange(
+                LOWER(vrijedi)::TIMESTAMP,
+                NOW()::TIMESTAMP
+            )
+            WHERE dokument_id = NEW.dokument_id
+            AND UPPER(vrijedi) = 'infinity'::TIMESTAMP;
 
-        INSERT INTO verzija_dokumenta (dokument_id, verzija, datoteka_id, finalna)
-        VALUES (
-            NEW.dokument_id,
-            prethodna_verzija + 1,
-            NEW.datoteka_id,
-            NEW.finalna
-        );
+            INSERT INTO verzija_dokumenta (dokument_id, verzija, datoteka_id, finalna, napomena)
+            VALUES (
+                NEW.dokument_id,
+                prethodna_verzija + 1,
+                NEW.datoteka_id,
+                NEW.finalna,
+                NEW.napomena
+            );
+        END IF;
+
         RETURN null;
     END;
 $$
@@ -169,8 +173,7 @@ CREATE TRIGGER update_nova_verzija
 BEFORE UPDATE
 ON verzija_dokumenta
 FOR EACH ROW
-WHEN (pg_trigger_depth() = 0
-AND UPPER(OLD.vrijedi) = 'infinity'::TIMESTAMP)
+WHEN (pg_trigger_depth() = 0)
 EXECUTE PROCEDURE update_nove_verzije();
 
 COMMIT;
