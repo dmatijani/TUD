@@ -9,11 +9,6 @@ import Card from './components/Card.vue'
 
   <main>
     <p>Ja radim!</p>
-    <Card />
-    <Card />
-    <Card />
-    <Card />
-    <Card />
   </main>
 </template>
 
