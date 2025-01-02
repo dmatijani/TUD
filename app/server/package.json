@@ -3,15 +3,17 @@
   "version": "1.0.0",
   "main": "server.mjs",
   "scripts": {
-    "pripremi": "npm link --save express cors express-session",
+    "pripremi": "npm install fs express cors express-session pg",
     "start": "node server.mjs"
   },
   "author": "David Matijanić",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "cors": "file:../../../../../../../../../../../../usr/lib/node_modules/cors",
-    "express": "file:../../../../../../../../../../../../usr/lib/node_modules/express",
-    "express-session": "file:../../../../../../../../../../../../usr/lib/node_modules/express-session"
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "fs": "^0.0.1-security",
+    "pg": "^8.13.1"
   }
 }

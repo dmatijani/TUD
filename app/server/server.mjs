@@ -1,12 +1,30 @@
 import express from "express";
 import cors from "cors";
-import sesija from "express-session";
+import session from "express-session";
+import { fileURLToPath } from "url";
+import path from "path";
 import RestUser from "./user/restUser.mjs";
+import Configuration from "./config/config.mjs";
+
+var config;
 
 const port = 12345;
+const currentModuleURL = import.meta.url;
+const currentModulePath = fileURLToPath(currentModuleURL);
+const directory = path.dirname(currentModulePath);
 
 const server = express();
-startServer();
+const configuration = new Configuration(path.join(directory, "/config/config.json"));
+configuration.loadConfiguration()
+    .then(getConfig)
+    .then(startServer)
+    .catch((error) => {
+        console.log(error.message);
+    });
+
+function getConfig() {
+    config = configuration.getConf();
+}
 
 function startServer() {
     server.use(
@@ -17,25 +35,25 @@ function startServer() {
             credentials: true,
         })
     );
-    server.use((zahtjev, odgovor, sljedeci) => {
-        odgovor.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
-        odgovor.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-        odgovor.setHeader(
+    server.use((req, res, next) => {
+        res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+        res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+        res.setHeader(
             "Access-Control-Allow-Headers",
             "Content-Type, Authorization"
         );
-        odgovor.setHeader("Access-Control-Expose-Headers", "Authorization");
-        odgovor.setHeader("Access-Control-Allow-Credentials", "true");
+        res.setHeader("Access-Control-Expose-Headers", "Authorization");
+        res.setHeader("Access-Control-Allow-Credentials", "true");
 
-        sljedeci();
+        next();
     }
     );
 
     server.use(express.urlencoded({ extended: true }));
     server.use(express.json());
     server.use(
-        sesija({
-            secret: "PROMIJENI_ME_STO_PRIJE!!!",
+        session({
+            secret: config.sessionSecret,
             saveUninitialized: true,
             cookie: { maxAge: 1000 * 60 * 60 * 3 },
             resave: false,
@@ -51,7 +69,7 @@ function startServer() {
 }
 
 function restServices() {
-    let restUser = new RestUser();
+    let restUser = new RestUser(config);
 
     server.post("/api/user/login", restUser.postUserLogin);
 }
