@@ -29,14 +29,14 @@ function getConfig() {
 function startServer() {
     server.use(
         cors({
-            origin: ["http://localhost:5173"],
+            origin: ["http://localhost:5173"], // vue app dev
             methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
             allowedHeaders: ["Content-Type", "Authorization"],
             credentials: true,
         })
     );
     server.use((req, res, next) => {
-        res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+        res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173"); // vue app dev
         res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
         res.setHeader(
             "Access-Control-Allow-Headers",

@@ -1,4 +1,8 @@
 {
+    "jwtConfig": {
+        "jwtDuration": 15,
+        "jwtKey": "dfg1334550879rEdfgDFgGETerTGFgDFre4t5dfGe4656457TRghWE34257689JNFH"
+    },
     "sessionSecret": "hgjupOIUjkhHJJghgdfGdfgewsdqwDRFhzTr54433466747RTHfdggerDr",
     "dbConfig": {
         "user": "postgres",
