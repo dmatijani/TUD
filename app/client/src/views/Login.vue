@@ -4,9 +4,12 @@ import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import RestServices from "../services/rest.mjs";
 import AuthController from "../services/authController.mjs";
+import ErrorMessage from "../components/ErrorMessage.vue";
 
 const authController = new AuthController();
 const router = useRouter();
+
+const errorMessage = ref("");
 
 onMounted(() => {
   if (authController.isAuthenticated()) {
@@ -29,7 +32,7 @@ const submitForm = async () => {
         router.go(0);
         router.push({ name: 'pocetna' })
     } else {
-        // TODO: ispisati poruku greške
+        errorMessage.value = response.error;
     }
 };
 
@@ -71,6 +74,7 @@ const loggedInOnly = async () => {
             <button type="submit">Prijavi</button>
         </fieldset>
     </form>
+    <ErrorMessage v-if="errorMessage != null && errorMessage != ''">{{ errorMessage }}</ErrorMessage>
 
     <button @click="getJwt">Dobij JWT</button>
     <button @click="logout">Odjava</button>
