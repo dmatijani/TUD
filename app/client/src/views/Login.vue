@@ -1,7 +1,18 @@
 <script setup>
 import { ref } from "vue";
+import { onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import RestServices from "../services/rest.mjs";
 import AuthController from "../services/authController.mjs";
+
+const authController = new AuthController();
+const router = useRouter();
+
+onMounted(() => {
+  if (authController.isAuthenticated()) {
+    router.replace({ name: 'home' });
+  }
+});
 
 const username = ref("");
 const password = ref("");
@@ -14,12 +25,14 @@ const submitForm = async () => {
     });
 
     if (response.success) {
-        let authController = new AuthController();
         authController.saveLoggedInUser(response.user);
+        router.replace({ name: 'home' });
+    } else {
+        // TODO: ispisati poruku greške
     }
 };
 
-// TODO: maknuti sve ove druge metode i gumbove (ovo je za probu)
+// TODO: maknuti sve ove druge metode i gumbove (ovo je za probu, vidi samo gdje staviti odjavu)
 const getJwt = async () => {
     const rest = new RestServices("http://localhost:12345/api");
     const response = await rest.sendRequest("GET", "/user/jwt");
@@ -31,7 +44,6 @@ const logout = async () => {
     const response = await rest.sendRequest("GET", "/user/logout");
     
     if (response.success) {
-        let authController = new AuthController();
         authController.removeLoggedInUser();
     }
 }
