@@ -10,7 +10,7 @@ const router = useRouter();
 
 onMounted(() => {
   if (authController.isAuthenticated()) {
-    router.replace({ name: 'home' });
+    router.push({ name: 'pocetna' })
   }
 });
 
@@ -26,7 +26,8 @@ const submitForm = async () => {
 
     if (response.success) {
         authController.saveLoggedInUser(response.user);
-        router.replace({ name: 'home' });
+        router.go(0);
+        router.push({ name: 'pocetna' })
     } else {
         // TODO: ispisati poruku greške
     }
