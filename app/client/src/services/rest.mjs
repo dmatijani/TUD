@@ -1,3 +1,5 @@
+import AuthController from "./authController.mjs";
+
 class RestSender {
     constructor(url) {
         this.url = url;
@@ -17,6 +19,8 @@ class RestSender {
         }
         
         if (authRequired) {
+            let authController = new AuthController();
+
             let jwtResponse = await fetch(this.url + "/user/jwt", {
                 method: "GET",
                 credentials: "include"
@@ -24,6 +28,7 @@ class RestSender {
             let jwtResponseDataString = await jwtResponse.text();
             let jwtResponseData = JSON.parse(jwtResponseDataString);
             if (jwtResponse.status != 201) {
+                authController.removeLoggedInUser();
                 return {
                     success: false,
                     text: "Nije moguće dobiti JWT"
@@ -32,6 +37,7 @@ class RestSender {
 
             let token = jwtResponseData.token;
             if (token == "" || token == null || token == undefined) {
+                authController.removeLoggedInUser();
                 return {
                     success: false,
                     text: "Nije moguće dobiti JWT"

@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from "vue";
 import RestServices from "../services/rest.mjs";
+import AuthController from "../services/authController.mjs";
 
 const username = ref("");
 const password = ref("");
@@ -12,7 +13,10 @@ const submitForm = async () => {
         password: password.value,
     });
 
-    console.log("Odgovor sa servera: ", response);
+    if (response.success) {
+        let authController = new AuthController();
+        authController.saveLoggedInUser(response.user);
+    }
 };
 
 // TODO: maknuti sve ove druge metode i gumbove (ovo je za probu)
@@ -25,7 +29,11 @@ const getJwt = async () => {
 const logout = async () => {
     const rest = new RestServices("http://localhost:12345/api");
     const response = await rest.sendRequest("GET", "/user/logout");
-    console.log("Odgovor sa servera: ", response);
+    
+    if (response.success) {
+        let authController = new AuthController();
+        authController.removeLoggedInUser();
+    }
 }
 
 const loggedInOnly = async () => {
