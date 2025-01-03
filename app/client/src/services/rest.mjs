@@ -10,7 +10,6 @@ class RestSender {
         let parameters = {
             credentials: "include",
             method: method,
-            headers: headers
         }
         
         if (body != undefined && body != null) {
@@ -18,9 +17,31 @@ class RestSender {
         }
         
         if (authRequired) {
-            // TODO: pošalji JWT na link
-            // TODO: dodaj to na fetch parameters
+            let jwtResponse = await fetch(this.url + "/user/jwt", {
+                method: "GET",
+                credentials: "include"
+            });
+            let jwtResponseDataString = await jwtResponse.text();
+            let jwtResponseData = JSON.parse(jwtResponseDataString);
+            if (jwtResponse.status != 201) {
+                return {
+                    success: false,
+                    text: "Nije moguće dobiti JWT"
+                }
+            }
+
+            let token = jwtResponseData.token;
+            if (token == "" || token == null || token == undefined) {
+                return {
+                    success: false,
+                    text: "Nije moguće dobiti JWT"
+                }
+            }
+
+            headers.set("Authorization", `Bearer ${token}`);
         }
+
+        parameters.headers = headers;
 
         let response = await fetch(this.url + path, parameters);
         let data = JSON.parse(await response.text());

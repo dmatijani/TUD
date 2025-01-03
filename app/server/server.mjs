@@ -71,7 +71,10 @@ function startServer() {
 function restServices() {
     let restUser = new RestUser(config);
 
+    server.get("/api/user/jwt", restUser.getUserJwt);
     server.post("/api/user/login", restUser.postUserLogin);
+    server.get("/api/user/logout", restUser.getUserLogout);
+    server.get("/api/user/loggedInOnly", restUser.getUserLoggedInOnly);
 }
 
 function serveClient() {}
