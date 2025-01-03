@@ -1,17 +1,18 @@
-<script setup lang="ts">
-import Card from './components/Card.vue'
+<script setup>
+import { RouterLink, RouterView } from 'vue-router'
 </script>
 
 <template>
-  <header>
-    <h1>TUD</h1>
-  </header>
+    <header>
+        <h1>TUD</h1>
 
-  <main>
-    <p>Ja radim!</p>
-  </main>
+        <div class="wrapper">
+            <nav>
+            <RouterLink to="/">Home</RouterLink>
+            <RouterLink to="/login">Prijava</RouterLink>
+            </nav>
+        </div>
+    </header>
+
+    <RouterView />
 </template>
-
-<style scoped>
-
-</style>
