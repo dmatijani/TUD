@@ -37,21 +37,6 @@ const submitForm = async () => {
 };
 
 // TODO: maknuti sve ove druge metode i gumbove (ovo je za probu, vidi samo gdje staviti odjavu)
-const getJwt = async () => {
-    const rest = new RestServices("http://localhost:12345/api");
-    const response = await rest.sendRequest("GET", "/user/jwt");
-    console.log("Odgovor sa servera: ", response);
-}
-
-const logout = async () => {
-    const rest = new RestServices("http://localhost:12345/api");
-    const response = await rest.sendRequest("GET", "/user/logout");
-    
-    if (response.success) {
-        authController.removeLoggedInUser();
-    }
-}
-
 const loggedInOnly = async () => {
     const rest = new RestServices("http://localhost:12345/api");
     const response = await rest.sendRequest("GET", "/user/loggedInOnly", undefined, true);
@@ -76,7 +61,5 @@ const loggedInOnly = async () => {
     </form>
     <ErrorMessage v-if="errorMessage != null && errorMessage != ''">{{ errorMessage }}</ErrorMessage>
 
-    <button @click="getJwt">Dobij JWT</button>
-    <button @click="logout">Odjava</button>
     <button @click="loggedInOnly">Zaštićen resurs</button>
 </template>
