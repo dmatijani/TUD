@@ -27,7 +27,8 @@ const loggedInUserName = () => {
 </script>
 
 <template>
-    <RouterLink to="/">Home</RouterLink>
+    <RouterLink to="/">Početna</RouterLink>
+    <RouterLink to="/register">Registracija</RouterLink>
     <NotAuthenticated>
         <RouterLink to="/login">Prijava</RouterLink>
     </NotAuthenticated>

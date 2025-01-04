@@ -56,11 +56,6 @@ CREATE TABLE verzija_dokumenta (
     PRIMARY KEY (dokument_id, vrijedi)
 );
 
-CREATE TABLE grupa (
-    id SERIAL PRIMARY KEY,
-    naziv VARCHAR(255) NOT NULL
-);
-
 CREATE TABLE korisnik (
     id SERIAL PRIMARY KEY,
     ime VARCHAR(50) NOT NULL,
@@ -71,6 +66,12 @@ CREATE TABLE korisnik (
     vrijeme_registracije TIMESTAMP NOT NULL DEFAULT NOW()::TIMESTAMP,
     adresa TEXT,
     telefon TEXT
+);
+
+CREATE TABLE grupa (
+    id SERIAL PRIMARY KEY,
+    naziv VARCHAR(255) NOT NULL,
+    vlasnik_id INT REFERENCES korisnik(id) DEFAULT NULL
 );
 
 CREATE TABLE korisnik_u_grupi (

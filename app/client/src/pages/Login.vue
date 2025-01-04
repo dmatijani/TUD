@@ -46,7 +46,7 @@ const loggedInOnly = async () => {
 
 <template>
     <h2>Prijava</h2>
-    <form id="signin_form" @submit.prevent="submitForm">
+    <form @submit.prevent="submitForm">
         <fieldset>
             <label for="username">
                 Korisničko ime

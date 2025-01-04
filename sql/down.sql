@@ -32,9 +32,9 @@ DROP TYPE radnja;
 
 DROP TABLE korisnik_u_grupi;
 
-DROP TABLE korisnik;
-
 DROP TABLE grupa;
+
+DROP TABLE korisnik;
 
 DROP TABLE verzija_dokumenta;
 
