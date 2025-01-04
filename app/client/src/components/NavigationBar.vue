@@ -27,12 +27,12 @@ const loggedInUserName = () => {
 </script>
 
 <template>
-<RouterLink to="/">Home</RouterLink>
-<NotAuthenticated>
-    <RouterLink to="/login">Prijava</RouterLink>
-</NotAuthenticated>
-<Authenticated>
-    <p>Prijavljen: {{ loggedInUserName() }}</p>
-    <button @click="logout">Odjava</button>
-</Authenticated>
+    <RouterLink to="/">Home</RouterLink>
+    <NotAuthenticated>
+        <RouterLink to="/login">Prijava</RouterLink>
+    </NotAuthenticated>
+    <Authenticated>
+        <p>Prijavljen: {{ loggedInUserName() }}</p>
+        <button @click="logout">Odjava</button>
+    </Authenticated>
 </template>

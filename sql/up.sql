@@ -91,6 +91,16 @@ CREATE TABLE pravo (
     radnje radnja[] NOT NULL
 );
 
+INSERT INTO pravo VALUES (
+    'vlasnik',
+    '{"create", "read", "update", "delete"}'
+);
+
+INSERT INTO pravo VALUES (
+    'citanje',
+    '{"read"}'
+);
+
 CREATE TABLE pristup_korisnik (
     korisnik_id INT REFERENCES korisnik(id)
     ON UPDATE CASCADE ON DELETE RESTRICT,
@@ -132,6 +142,36 @@ $$
 LANGUAGE plpgsql;
 
 -- Okidači (i funkcije)
+
+CREATE OR REPLACE FUNCTION dodaj_novog_korisnika_u_grupu_korisnika()
+RETURNS TRIGGER
+AS $$
+    DECLARE
+        postoji BOOLEAN;
+        grupa_id INT;
+    BEGIN
+        postoji := EXISTS(
+            SELECT * FROM grupa
+            WHERE naziv = 'Korisnici'
+        );
+
+        IF NOT postoji THEN
+            INSERT INTO grupa(naziv) VALUES ('Korisnici');
+        END IF;
+
+        SELECT id INTO grupa_id FROM grupa WHERE naziv = 'Korisnici';
+        INSERT INTO korisnik_u_grupi VALUES (NEW.id, grupa_id);
+
+        RETURN NEW;
+    END;
+$$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER dodavanje_korisnika_u_grupu_korisnika
+AFTER INSERT
+ON korisnik
+FOR EACH ROW
+EXECUTE PROCEDURE dodaj_novog_korisnika_u_grupu_korisnika();
 
 CREATE OR REPLACE FUNCTION insert_nove_verzije()
 RETURNS TRIGGER
@@ -216,29 +256,5 @@ ON verzija_dokumenta
 FOR EACH ROW
 WHEN (pg_trigger_depth() = 0)
 EXECUTE PROCEDURE update_nove_verzije();
-
--- Podaci
-
-INSERT INTO korisnik (ime, prezime, email, korime, lozinka_hash) VALUES (
-    'Običan',
-    'Korisnik',
-    'obicankorisnik@nekimail',
-    'obican',
-    encode(sha256('obican'), 'hex')
-);
-
-INSERT INTO pravo VALUES (
-    'vlasnik',
-    '{"create", "read", "update", "delete"}'
-);
-
-INSERT INTO pravo VALUES (
-    'citanje',
-    '{"read"}'
-);
-
-INSERT INTO grupa (naziv) VALUES ('Korisnici');
-
-INSERT INTO korisnik_u_grupi VALUES (1, 1);
 
 COMMIT;

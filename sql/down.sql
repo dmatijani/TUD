@@ -10,6 +10,10 @@ DROP TRIGGER insert_nova_verzija ON verzija_dokumenta;
 
 DROP FUNCTION insert_nove_verzije();
 
+DROP TRIGGER dodavanje_korisnika_u_grupu_korisnika ON korisnik;
+
+DROP FUNCTION dodaj_novog_korisnika_u_grupu_korisnika();
+
 -- Funkcije
 
 DROP FUNCTION nova_datoteka(TEXT, TEXT);
