@@ -165,6 +165,46 @@ AS $$
 $$
 LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION podaci_o_korisniku(id INT)
+RETURNS TABLE(
+    id INT,
+    ime TEXT,
+    prezime TEXT,
+    email TEXT,
+    korime TEXT,
+    vrijeme_registracije TIMESTAMP,
+    adresa TEXT,
+    telefon TEXT,
+    grupe JSON
+)
+AS $$
+SELECT
+    k.id,
+    k.ime,
+    k.prezime,
+    k.email,
+    k.korime,
+    k.vrijeme_registracije,
+    k.adresa,
+    k.telefon,
+    COALESCE(
+        (SELECT json_agg(json_build_object(
+            'naziv', g.naziv,
+            'vrijeme_uclanjivanja', kug.vrijeme_pridruzivanja,
+            'je_vlasnik', COALESCE((g.vlasnik_id = k.id), false)::BOOLEAN
+        ))
+         FROM korisnik_u_grupi kug
+         JOIN grupa g ON kug.grupa_id = g.id
+         WHERE kug.korisnik_id = k.id),
+        '[]'::json
+    ) AS grupe
+FROM
+    korisnik k
+WHERE
+    k.id = $1;
+$$
+LANGUAGE sql;
+
 CREATE OR REPLACE FUNCTION nova_datoteka(naziv TEXT, putanja TEXT)
 RETURNS VOID
 AS $$

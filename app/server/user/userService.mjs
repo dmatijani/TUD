@@ -5,32 +5,6 @@ class UserService {
         this.config = config;
     }
 
-    getUserData = async function(id) {
-        if (!id) {
-            throw new Error("Nije dan korisnikov ID.");
-        }
-
-        var db = new DB(this.config.dbConfig);
-        await db.connect();
-        let params = [id];
-        let foundUsers = await db.execute("SELECT id, ime, prezime, korime, email FROM korisnik WHERE id = $1;", params);
-        await db.close();
-
-        if (foundUsers == undefined || foundUsers == null || foundUsers.length != 1) {
-            throw new Error("Korisnik s tim podacima ne postoji!");
-        }
-
-        let foundUser = foundUsers[0];
-
-        return {
-            user_id: foundUser.id,
-            name: foundUser.ime,
-            surname: foundUser.prezime,
-            username: foundUser.korime,
-            email: foundUser.email,
-        };
-    }
-
     logInUser = async function(data) {
         if (!data.username) {
             throw new Error("Korisničko ime nije uneseno.");
@@ -88,6 +62,28 @@ class UserService {
         } finally {
             await db.close();
         }
+    }
+
+    getUserProfile = async function(id) {
+        if (!id) {
+            throw new Error("Nije dan korisnikov ID.");
+        }
+
+        var db = new DB(this.config.dbConfig);
+        await db.connect();
+        let params = [id];
+        let foundUsers = await db.execute("SELECT * FROM podaci_o_korisniku($1)", params);
+        await db.close();
+
+        if (!foundUsers || foundUsers.length != 1) {
+            throw new Error("Korisnik s tim podacima ne postoji!");
+        }
+
+        let foundUser = foundUsers(0);
+
+        console.log(foundUser);
+
+        return foundUser;
     }
 }
 

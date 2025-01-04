@@ -114,18 +114,26 @@ class RestUser {
         }));
     };
 
-    // TODO: ovo maknuti jer je samo za probu
-    getUserLoggedInOnly = (req, res) => {
+    getUserProfile = (req, res) => {
         res.type("application/json");
         let auth = new Auth(this.config.jwtConfig);
 
         auth.checkAuth(req)
-            .then(() => {
-                res.status(201);
-                    res.send(JSON.stringify({
-                        "success": true,
-                        "text": "Tajni podaci..."
-                    }))
+            .then((id) => {
+                let userService = new UserService(this.config);
+                userService.getUserProfile(id)
+                    .then(async (userProfile) => {
+                        console.log(userProfile);
+                        res.status(200);
+                        res.send(JSON.stringify({
+                            "success": true,
+                            "text": "uspjesno",
+                            "user": userProfile
+                        }));
+                    })
+                    .catch((error) => { /// TODO: vidjeti treba li ovo uopće
+                        throw error;
+                    })
             })
             .catch((error) => {
                 res.status(400);

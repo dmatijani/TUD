@@ -29,6 +29,8 @@ class Auth {
         if (!tokenValid) {
             throw new Error("Token nije validan.");
         }
+
+        return req.session.id;
     }
 }
 

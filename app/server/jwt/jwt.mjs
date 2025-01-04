@@ -12,26 +12,25 @@ class JWT {
     }
 
     validateToken(req) {
-        if (req.headers.authorization == null || req.headers.authorization == undefined) {
+        if (!req.headers.authorization) {
             return false;
         }
 
         let token = req.headers.authorization.split(" ")[1];
-        if (token == "" || token == undefined || token == null) {
+        if (!token) {
             return false;
         }
 
         let id = req.session.user_id;
-        if (id == null || id == undefined) {
+        if (!id) {
             return false;
         }
         let username = req.session.username;
-        if (username == "" || username == null || username == undefined) {
+        if (!username) {
             return false;
         }
 
         let decodedToken = decodeToken(token);
-        console.log(decodedToken);
 
         if (decodedToken.user_id != id || decodedToken.username != username) {
             return false;

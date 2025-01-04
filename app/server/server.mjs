@@ -75,7 +75,7 @@ function restServices() {
     server.post("/api/user/login", restUser.postUserLogin);
     server.post("/api/user/register", restUser.postUserRegister);
     server.get("/api/user/logout", restUser.getUserLogout);
-    server.get("/api/user/loggedInOnly", restUser.getUserLoggedInOnly);
+    server.get("/api/user/profile", restUser.getUserProfile);
 }
 
 function serveClient() {}
