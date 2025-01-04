@@ -32,7 +32,6 @@ class DB {
             const result = await this.client.query(sql, parametri);
             return result.rows;
         } catch (err) {
-            console.error("Greška pri izvršavanju upita: ", err);
             throw err;
         }
     }

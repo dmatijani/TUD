@@ -27,7 +27,7 @@ class RestSender {
             });
             let jwtResponseDataString = await jwtResponse.text();
             let jwtResponseData = JSON.parse(jwtResponseDataString);
-            if (jwtResponse.status != 201) {
+            if (jwtResponse.status != 200) {
                 authController.removeLoggedInUser();
                 return {
                     success: false,

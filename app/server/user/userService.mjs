@@ -6,7 +6,7 @@ class UserService {
     }
 
     getUserData = async function(id) {
-        if (id == null || id == undefined) {
+        if (!id) {
             throw new Error("Nije dan korisnikov ID.");
         }
 
@@ -23,20 +23,20 @@ class UserService {
         let foundUser = foundUsers[0];
 
         return {
-            "user_id": foundUser.id,
-            "name": foundUser.ime,
-            "surname": foundUser.prezime,
-            "username": foundUser.korime,
-            "email": foundUser.email,
+            user_id: foundUser.id,
+            name: foundUser.ime,
+            surname: foundUser.prezime,
+            username: foundUser.korime,
+            email: foundUser.email,
         };
     }
 
     logInUser = async function(data) {
-        if (data.username == "" || data.username == null || data.username == undefined) {
+        if (!data.username) {
             throw new Error("Korisničko ime nije uneseno.");
         }
 
-        if (data.password == "" || data.password == null || data.password == undefined) {
+        if (!data.password) {
             throw new Error("Lozinka nije unesena.");
         }
 
@@ -53,12 +53,41 @@ class UserService {
         let foundUser = foundUsers[0];
 
         return {
-            "user_id": foundUser.id,
-            "name": foundUser.ime,
-            "surname": foundUser.prezime,
-            "username": foundUser.korime,
-            "email": foundUser.email,
+            user_id: foundUser.id,
+            name: foundUser.ime,
+            surname: foundUser.prezime,
+            username: foundUser.korime,
+            email: foundUser.email,
         };
+    }
+
+    registerUser = async function(data) {
+        if (!data.name) {
+            throw new Error("Ime nije uneseno.");
+        }
+        if (!data.surname) {
+            throw new Error("Prezime nije uneseno.");
+        }
+        if (!data.username) {
+            throw new Error("Korisničko ime nije uneseno.");
+        }
+        if (!data.email) {
+            throw new Error("Email nije unesen.");
+        }
+        if (!data.password) {
+            throw new Error("Lozinka nije unesena.");
+        }
+
+        var db = new DB(this.config.dbConfig);
+        await db.connect();
+        let params = [data.name, data.surname, data.username, data.email, data.password];
+        try {
+            await db.execute("SELECT registriraj_korisnika($1, $2, $3, $4, $5);", params);
+        } catch (error) {
+            throw error;
+        } finally {
+            await db.close();
+        }
     }
 }
 

@@ -25,7 +25,7 @@ class RestUser {
         let userService = new UserService(this.config);
         userService.getUserData(id)
             .then(async (user) => {
-                res.status(201);
+                res.status(200);
                 let jwt = new JWT(this.config.jwtConfig);
                 let token = jwt.generateToken(user);
                 res.send(JSON.stringify({
@@ -71,6 +71,29 @@ class RestUser {
                 }));
             });
     };
+
+    postUserRegister = (req, res) => {
+        res.type("application/json");
+
+        let userService = new UserService(this.config);
+
+        let body = req.body;
+        userService.registerUser(body)
+            .then(async () => {
+                res.status(201);
+                res.send(JSON.stringify({
+                    "success": true,
+                    "text": "uspjesno"
+                }));
+            })
+            .catch((error) => {
+                res.status(400);
+                res.send(JSON.stringify({
+                    "success": false,
+                    "error": error.message
+                }));
+            })
+    }
 
     getUserLogout = (req, res) => {
         res.type("application/json");

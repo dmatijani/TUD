@@ -75,8 +75,9 @@ CREATE TABLE korisnik (
 
 CREATE TABLE korisnik_u_grupi (
     korisnik_id INT REFERENCES korisnik(id)
-    ON UPDATE CASCADE ON DELETE RESTRICT,
-    grupa_id INT REFERENCES grupa(id),
+    ON UPDATE CASCADE ON DELETE CASCADE,
+    grupa_id INT REFERENCES grupa(id)
+    ON UPDATE CASCADE ON DELETE CASCADE,
     vrijeme_pridruzivanja TIMESTAMP NOT NULL DEFAULT NOW()::TIMESTAMP,
     PRIMARY KEY (korisnik_id, grupa_id)
 );
@@ -146,6 +147,10 @@ AS $$
 
         IF email_postoji THEN
             RAISE EXCEPTION '%', 'Korisnik s tom email adresom već postoji!';
+        END IF;
+
+        IF NOT (novi_email ~ '^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$') THEN
+            RAISE EXCEPTION '%', 'Email nije ispravan!';
         END IF;
 
         INSERT INTO korisnik(ime, prezime, korime, email, lozinka_hash) VALUES (

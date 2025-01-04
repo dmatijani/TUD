@@ -73,6 +73,7 @@ function restServices() {
 
     server.get("/api/user/jwt", restUser.getUserJwt);
     server.post("/api/user/login", restUser.postUserLogin);
+    server.post("/api/user/register", restUser.postUserRegister);
     server.get("/api/user/logout", restUser.getUserLogout);
     server.get("/api/user/loggedInOnly", restUser.getUserLoggedInOnly);
 }
