@@ -43,7 +43,7 @@ class UserService {
         var db = new DB(this.config.dbConfig);
         await db.connect();
         let params = [data.username, data.password];
-        let foundUsers = await db.execute("SELECT id, ime, prezime, korime, email FROM korisnik WHERE korime = $1 AND lozinka_hash = encode(sha256($2), 'hex');", params);
+        let foundUsers = await db.execute("SELECT id, ime, prezime, korime, email FROM korisnik WHERE korime = $1 AND lozinka_hash = encode(sha256($2::bytea), 'hex');", params);
         await db.close();
 
         if (foundUsers == undefined || foundUsers == null || foundUsers.length != 1) {

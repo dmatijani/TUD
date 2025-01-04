@@ -68,6 +68,7 @@ CREATE TABLE korisnik (
     email VARCHAR(50) NOT NULL UNIQUE,
     korime VARCHAR(50) NOT NULL UNIQUE,
     lozinka_hash CHAR(64) NOT NULL,
+    vrijeme_registracije TIMESTAMP NOT NULL DEFAULT NOW()::TIMESTAMP,
     adresa TEXT,
     telefon TEXT
 );
@@ -76,6 +77,7 @@ CREATE TABLE korisnik_u_grupi (
     korisnik_id INT REFERENCES korisnik(id)
     ON UPDATE CASCADE ON DELETE RESTRICT,
     grupa_id INT REFERENCES grupa(id),
+    vrijeme_pridruzivanja TIMESTAMP NOT NULL DEFAULT NOW()::TIMESTAMP,
     PRIMARY KEY (korisnik_id, grupa_id)
 );
 
@@ -120,6 +122,42 @@ CREATE TABLE pristup_grupa (
 );
 
 -- Funkcije
+
+CREATE OR REPLACE FUNCTION registriraj_korisnika(ime TEXT, prezime TEXT, novo_korime TEXT, novi_email TEXT, lozinka TEXT)
+RETURNS VOID
+AS $$
+    DECLARE
+        korime_postoji BOOLEAN;
+        declare email_postoji BOOLEAN;
+    BEGIN
+        korime_postoji := EXISTS(
+            SELECT id FROM korisnik
+            WHERE korime = novo_korime
+        );
+
+        IF korime_postoji THEN
+            RAISE EXCEPTION '%','Korisnik s tim korisničkim imenom već postoji!';
+        END IF;
+
+        email_postoji := EXISTS(
+            SELECT id FROM korisnik
+            WHERE email = novi_email
+        );
+
+        IF email_postoji THEN
+            RAISE EXCEPTION '%', 'Korisnik s tom email adresom već postoji!';
+        END IF;
+
+        INSERT INTO korisnik(ime, prezime, korime, email, lozinka_hash) VALUES (
+            ime,
+            prezime,
+            novo_korime,
+            novi_email,
+            encode(sha256(lozinka::bytea), 'hex')
+        );
+    END;
+$$
+LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION nova_datoteka(naziv TEXT, putanja TEXT)
 RETURNS VOID
