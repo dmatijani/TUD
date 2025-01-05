@@ -30,7 +30,7 @@ class Auth {
             throw new Error("Token nije validan.");
         }
 
-        return req.session.id;
+        return req.session.user_id;
     }
 }
 

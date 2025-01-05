@@ -123,7 +123,6 @@ class RestUser {
                 let userService = new UserService(this.config);
                 userService.getUserProfile(id)
                     .then(async (userProfile) => {
-                        console.log(userProfile);
                         res.status(200);
                         res.send(JSON.stringify({
                             "success": true,

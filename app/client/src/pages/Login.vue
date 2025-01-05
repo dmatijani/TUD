@@ -13,7 +13,7 @@ const errorMessage = ref("");
 
 onMounted(() => {
   if (authController.isAuthenticated()) {
-    router.push({ name: 'pocetna' })
+    router.push({ name: 'pocetna' });
   }
 });
 
@@ -35,13 +35,6 @@ const submitForm = async () => {
         errorMessage.value = response.error;
     }
 };
-
-// TODO: maknuti sve ove druge metode i gumbove (ovo je za probu, vidi samo gdje staviti odjavu)
-const loggedInOnly = async () => {
-    const rest = new RestServices("http://localhost:12345/api");
-    const response = await rest.sendRequest("GET", "/user/loggedInOnly", undefined, true);
-    console.log("Odgovor sa servera: ", response);
-}
 </script>
 
 <template>
@@ -60,6 +53,4 @@ const loggedInOnly = async () => {
         </fieldset>
     </form>
     <ErrorMessage v-if="errorMessage != null && errorMessage != ''">{{ errorMessage }}</ErrorMessage>
-
-    <button @click="loggedInOnly">Zaštićen resurs</button>
 </template>

@@ -27,13 +27,16 @@ const loggedInUserName = () => {
 </script>
 
 <template>
-    <RouterLink to="/">Početna</RouterLink>
-    <RouterLink to="/register">Registracija</RouterLink>
-    <NotAuthenticated>
-        <RouterLink to="/login">Prijava</RouterLink>
-    </NotAuthenticated>
-    <Authenticated>
-        <p>Prijavljen: {{ loggedInUserName() }}</p>
-        <button @click="logout">Odjava</button>
-    </Authenticated>
+    <ul>
+        <li><RouterLink to="/">Početna</RouterLink></li>
+        <li><RouterLink to="/register">Registracija</RouterLink></li>
+        <NotAuthenticated>
+            <li><RouterLink to="/login">Prijava</RouterLink></li>
+        </NotAuthenticated>
+        <Authenticated>
+            <li><span>Prijavljen: {{ loggedInUserName() }}</span></li>
+            <li><RouterLink to="/profile">Profil</RouterLink></li>
+            <li><span v-on:click="logout()">Odjava</span></li>
+        </Authenticated>
+    </ul>
 </template>
