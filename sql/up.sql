@@ -206,42 +206,57 @@ WHERE
 $$
 LANGUAGE sql;
 
-CREATE OR REPLACE FUNCTION podaci_o_grupi(id INT)
+CREATE OR REPLACE FUNCTION podaci_o_grupi(grupa_id INT, korisnik_id INT)
 RETURNS TABLE(
     id INT,
-    naziv TEXT,
+    naziv VARCHAR(255),
     vlasnik_id INT,
     vlasnik TEXT,
-    email_vlasnika TEXT,
+    email_vlasnika VARCHAR(50),
     clanovi JSON
 )
 AS $$
-SELECT
-    g.id,
-    g.naziv,
-    v.id as vlasnik_id,
-    CONCAT(v.ime, ' ', v.prezime) AS vlasnik,
-    v.email AS email_vlasnika,
-    COALESCE(
-        (SELECT json_agg(json_build_object(
-            'korisnik_id', k.id,
-            'korisnik', CONCAT(k.ime, ' ', k.prezime),
-            'vrijeme_uclanjivanja', kug.vrijeme_pridruzivanja,
-            'je_vlasnik', COALESCE((g.vlasnik_id = k.id), false)::BOOLEAN
-        ))
-         FROM korisnik_u_grupi kug
-         JOIN korisnik k ON kug.korisnik_id = k.id
-         WHERE kug.grupa_id = g.id),
-        '[]'::json
-    ) AS clanovi
-FROM
-    grupa g
-LEFT JOIN korisnik v
-    ON g.vlasnik_id = v.id
-WHERE
-    g.id = $1;
+DECLARE
+    clan_grupe BOOLEAN;
+BEGIN
+    clan_grupe := EXISTS(
+        SELECT * FROM korisnik_u_grupi kug
+        WHERE kug.grupa_id = $1
+        AND kug.korisnik_id = $2
+    );
+
+    IF NOT clan_grupe THEN
+        RAISE EXCEPTION '%','Korisnik nije član grupe!';
+    END IF;
+
+    RETURN QUERY
+    SELECT
+        g.id,
+        g.naziv,
+        v.id as vlasnik_id,
+        CONCAT(v.ime, ' ', v.prezime)::TEXT AS vlasnik,
+        v.email AS email_vlasnika,
+        COALESCE(
+            (SELECT json_agg(json_build_object(
+                'korisnik_id', k.id,
+                'korisnik', CONCAT(k.ime, ' ', k.prezime),
+                'vrijeme_uclanjivanja', kug.vrijeme_pridruzivanja,
+                'je_vlasnik', COALESCE((g.vlasnik_id = k.id), false)::BOOLEAN
+            ))
+            FROM korisnik_u_grupi kug
+            JOIN korisnik k ON kug.korisnik_id = k.id
+            WHERE kug.grupa_id = g.id),
+            '[]'::json
+        ) AS clanovi
+    FROM
+        grupa g
+    LEFT JOIN korisnik v
+        ON g.vlasnik_id = v.id
+    WHERE
+        g.id = $1;
+END;
 $$
-LANGUAGE sql;
+LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION nova_datoteka(naziv TEXT, putanja TEXT)
 RETURNS VOID

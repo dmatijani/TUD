@@ -18,7 +18,7 @@ DROP FUNCTION dodaj_novog_korisnika_u_grupu_korisnika();
 
 DROP FUNCTION nova_datoteka(TEXT, TEXT);
 
-DROP FUNCTION podaci_o_grupi(INT);
+DROP FUNCTION podaci_o_grupi(INT, INT);
 
 DROP FUNCTION podaci_o_korisniku(INT);
 
