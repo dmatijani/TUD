@@ -7,11 +7,10 @@ import AuthController from "../services/authController.mjs";
 
 const authController = new AuthController();
 const router = useRouter();
-const rest = new RestServices("http://localhost:12345/api");
+const rest = new RestServices();
 
 const errorMessage = ref("");
-const userLoaded = ref(false);
-const userData = ref({});
+const userData = ref(null);
 
 onMounted(async () => {
     if (!authController.isAuthenticated()) {
@@ -21,7 +20,6 @@ onMounted(async () => {
 
     const response = await rest.sendRequest("GET", "/user/profile", null, true);
     if (response.success) {
-        userLoaded.value = true;
         userData.value = response.user;
     } else {
         errorMessage.value = response.error;
@@ -31,8 +29,7 @@ onMounted(async () => {
 
 <template>
     <h2>Profil</h2>
-    <p v-if="!userLoaded && errorMessage == ''">Učitavam...</p>
-    <div v-if="userLoaded">
+    <div v-if="userData != null">
         <h3>Osnovno</h3>
         <ul>
             <li>Ime: <span>{{ userData.ime }}</span></li>
@@ -44,7 +41,7 @@ onMounted(async () => {
             <li>Vrijeme registracije: <span>{{ userData.vrijeme_registracije }}</span></li>
         </ul>
     </div>
-    <div v-if="userLoaded">
+    <div v-if="userData != null">
         <h3>Grupe</h3>
         <ul>
             <li v-for="grupa in userData.grupe"><ul>

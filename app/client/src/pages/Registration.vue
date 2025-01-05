@@ -15,7 +15,7 @@ const username = ref("");
 const password = ref("");
 
 const submitForm = async () => {
-    const rest = new RestServices("http://localhost:12345/api");
+    const rest = new RestServices();
     const response = await rest.sendRequest("POST", "/user/register", {
         name: name.value,
         surname: surname.value,

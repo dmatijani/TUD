@@ -1,8 +1,8 @@
 import AuthController from "./authController.mjs";
 
 class RestSender {
-    constructor(url) {
-        this.url = url;
+    constructor() {
+        this.url = window.restUrl;
     }
 
     sendRequest = async (method, path, body = undefined, authRequired = false) => {
