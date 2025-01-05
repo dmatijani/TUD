@@ -189,6 +189,7 @@ SELECT
     k.telefon,
     COALESCE(
         (SELECT json_agg(json_build_object(
+            'grupa_id', g.id,
             'naziv', g.naziv,
             'vrijeme_uclanjivanja', kug.vrijeme_pridruzivanja,
             'je_vlasnik', COALESCE((g.vlasnik_id = k.id), false)::BOOLEAN
@@ -202,6 +203,43 @@ FROM
     korisnik k
 WHERE
     k.id = $1;
+$$
+LANGUAGE sql;
+
+CREATE OR REPLACE FUNCTION podaci_o_grupi(id INT)
+RETURNS TABLE(
+    id INT,
+    naziv TEXT,
+    vlasnik_id INT,
+    vlasnik TEXT,
+    email_vlasnika TEXT,
+    clanovi JSON
+)
+AS $$
+SELECT
+    g.id,
+    g.naziv,
+    v.id as vlasnik_id,
+    CONCAT(v.ime, ' ', v.prezime) AS vlasnik,
+    v.email AS email_vlasnika,
+    COALESCE(
+        (SELECT json_agg(json_build_object(
+            'korisnik_id', k.id,
+            'korisnik', CONCAT(k.ime, ' ', k.prezime),
+            'vrijeme_uclanjivanja', kug.vrijeme_pridruzivanja,
+            'je_vlasnik', COALESCE((g.vlasnik_id = k.id), false)::BOOLEAN
+        ))
+         FROM korisnik_u_grupi kug
+         JOIN korisnik k ON kug.korisnik_id = k.id
+         WHERE kug.grupa_id = g.id),
+        '[]'::json
+    ) AS clanovi
+FROM
+    grupa g
+LEFT JOIN korisnik v
+    ON g.vlasnik_id = v.id
+WHERE
+    g.id = $1;
 $$
 LANGUAGE sql;
 
