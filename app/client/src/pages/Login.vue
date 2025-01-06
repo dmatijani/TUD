@@ -12,9 +12,9 @@ const router = useRouter();
 const errorMessage = ref("");
 
 onMounted(() => {
-  if (authController.isAuthenticated()) {
-    router.push({ name: 'pocetna' });
-  }
+    if (authController.isAuthenticated()) {
+        router.push({ name: 'pocetna' });
+    }
 });
 
 const username = ref("");

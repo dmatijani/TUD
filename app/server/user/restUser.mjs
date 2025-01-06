@@ -130,7 +130,7 @@ class RestUser {
                             "user": userProfile
                         }));
                     })
-                    .catch((error) => { /// TODO: vidjeti treba li ovo uopće
+                    .catch((error) => {
                         throw error;
                     })
             })

@@ -48,6 +48,7 @@ onMounted(async () => {
                 <li>Naziv: <span>{{ grupa.naziv }}</span></li>
                 <li>Vrijeme učlanjivanja: <span>{{ grupa.vrijeme_uclanjivanja }}</span></li>
                 <li v-if="grupa.je_vlasnik">Vlasnik</li>
+                <li><RouterLink :to="'/group/' + grupa.grupa_id">Detalji grupe</RouterLink></li>
             </ul></li>
         </ul>
     </div>

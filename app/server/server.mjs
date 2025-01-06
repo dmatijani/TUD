@@ -4,6 +4,7 @@ import session from "express-session";
 import { fileURLToPath } from "url";
 import path from "path";
 import RestUser from "./user/restUser.mjs";
+import RestGroup from "./group/restGroup.mjs";
 import Configuration from "./config/config.mjs";
 
 var config;
@@ -70,12 +71,15 @@ function startServer() {
 
 function restServices() {
     let restUser = new RestUser(config);
+    let restGroup = new RestGroup(config);
 
     server.get("/api/user/jwt", restUser.getUserJwt);
     server.post("/api/user/login", restUser.postUserLogin);
     server.post("/api/user/register", restUser.postUserRegister);
     server.get("/api/user/logout", restUser.getUserLogout);
     server.get("/api/user/profile", restUser.getUserProfile);
+
+    server.get("/api/group/:groupId", restGroup.getGroupDetails)
 }
 
 function serveClient() {}
