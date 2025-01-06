@@ -80,6 +80,8 @@ function restServices() {
     server.get("/api/user/profile", restUser.getUserProfile);
 
     server.get("/api/group/:groupId", restGroup.getGroupDetails)
+    server.put("/api/group/addMember", restGroup.putGroupMember)
+    server.delete("/api/group/removeMember", restGroup.deleteGroupMember)
 }
 
 function serveClient() {}

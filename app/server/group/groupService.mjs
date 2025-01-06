@@ -30,6 +30,48 @@ class GroupService {
 
         return foundGroup;
     }
+
+    addMemberToGroup = async function(memberId, groupId, ownerId) {
+        if (!memberId) {
+            throw new Error("Nije dan ID grupe.");
+        }
+
+        if (!groupId) {
+            throw new Error("Nije dan ID člana.");
+        }
+
+        var db = new DB(this.config.dbConfig);
+        await db.connect();
+        let params = [ownerId, groupId, memberId];
+        try {
+            await db.execute("SELECT dodaj_clana_u_grupu($1, $2, $3);", params);
+        } catch (error) {
+            throw error;
+        } finally {
+            await db.close();
+        }
+    }
+
+    removeMemberFromGroup = async function(memberId, groupId, ownerId) {
+        if (!memberId) {
+            throw new Error("Nije dan ID grupe.");
+        }
+
+        if (!groupId) {
+            throw new Error("Nije dan ID člana.");
+        }
+
+        var db = new DB(this.config.dbConfig);
+        await db.connect();
+        let params = [ownerId, groupId, memberId];
+        try {
+            await db.execute("SELECT ukloni_clana_iz_grupe($1, $2, $3);", params);
+        } catch (error) {
+            throw error;
+        } finally {
+            await db.close();
+        }
+    }
 }
 
 export default GroupService;
