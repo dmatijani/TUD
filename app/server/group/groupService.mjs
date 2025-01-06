@@ -72,6 +72,23 @@ class GroupService {
             await db.close();
         }
     }
+
+    createGroup = async function(groupName, creatorId) {
+        if (!groupName) {
+            throw new Error("Nije dan naziv grupe.");
+        }
+
+        var db = new DB(this.config.dbConfig);
+        await db.connect();
+        let params = [groupName, creatorId];
+        try {
+            await db.execute("SELECT stvori_grupu($1, $2);", params);
+        } catch (error) {
+            throw error;
+        } finally {
+            await db.close();
+        }
+    }
 }
 
 export default GroupService;

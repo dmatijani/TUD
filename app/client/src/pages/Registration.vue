@@ -1,6 +1,5 @@
 <script setup>
 import { ref } from "vue";
-import { useRouter } from 'vue-router';
 import RestServices from "../services/rest.mjs";
 import SuccessMessage from "../components/SuccessMessage.vue";
 import ErrorMessage from "../components/ErrorMessage.vue";
@@ -15,6 +14,9 @@ const username = ref("");
 const password = ref("");
 
 const submitForm = async () => {
+    successMessage.value = "";
+    errorMessage.value = "";
+
     const rest = new RestServices();
     const response = await rest.sendRequest("POST", "/user/register", {
         name: name.value,
@@ -25,10 +27,8 @@ const submitForm = async () => {
     });
 
     if (response.success) {
-        errorMessage.value = "";
-        successMessage.value = "Uspješno ste registrirali novog korisnika!";
+        successMessage.value = response.text;
     } else {
-        successMessage.value = "";
         errorMessage.value = response.error;
     }
 };

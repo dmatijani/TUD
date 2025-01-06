@@ -78,11 +78,12 @@ function restServices() {
     server.post("/api/user/register", restUser.postUserRegister);
     server.get("/api/user/logout", restUser.getUserLogout);
     server.get("/api/user/profile", restUser.getUserProfile);
-    server.get("/api/users/notInGroup/:groupId", restUser.getUsersNotInGroup)
+    server.get("/api/users/notInGroup/:groupId", restUser.getUsersNotInGroup);
 
-    server.get("/api/group/:groupId", restGroup.getGroupDetails)
-    server.put("/api/group/addMember", restGroup.putGroupMember)
-    server.delete("/api/group/removeMember", restGroup.deleteGroupMember)
+    server.get("/api/group/:groupId", restGroup.getGroupDetails);
+    server.post("/api/group/create", restGroup.postGroup);
+    server.put("/api/group/addMember", restGroup.putGroupMember);
+    server.delete("/api/group/removeMember", restGroup.deleteGroupMember);
 }
 
 function serveClient() {}

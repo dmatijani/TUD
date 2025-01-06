@@ -83,7 +83,7 @@ class RestUser {
                 res.status(201);
                 res.send(JSON.stringify({
                     "success": true,
-                    "text": "uspjesno"
+                    "text": "Uspješno ste registrirali novog korisnika!"
                 }));
             })
             .catch((error) => {

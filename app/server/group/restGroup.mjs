@@ -41,6 +41,40 @@ class RestGroup {
             })
     }
 
+    postGroup = (req, res) => {
+        res.type("application/json");
+        let auth = new Auth(this.config.jwtConfig);
+
+        auth.checkAuth(req)
+            .then((userId) => {
+                let groupName = req.body.groupName;
+
+                let groupService = new GroupService(this.config);
+                groupService.createGroup(groupName, userId)
+                    .then(async () => {
+                        res.status(201);
+                        res.send(JSON.stringify({
+                            "success": true,
+                            "text": "Grupa uspješno kreirana!"
+                        }));
+                    })
+                    .catch((error) => {
+                        res.status(400);
+                        res.send(JSON.stringify({
+                            "success": false,
+                            "error": error.message
+                        }));
+                    })
+            })
+            .catch((error) => {
+                res.status(400);
+                res.send(JSON.stringify({
+                    "success": false,
+                    "error": error.message
+                }));
+            })
+    }
+
     putGroupMember = (req, res) => {
         res.type("application/json");
         let auth = new Auth(this.config.jwtConfig);

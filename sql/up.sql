@@ -355,6 +355,26 @@ END;
 $$
 LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION stvori_grupu(naziv TEXT, vlasnik_id INT)
+RETURNS VOID
+AS $$
+DECLARE
+    postoji_slicna BOOLEAN;
+BEGIN
+    postoji_slicna := EXISTS(
+        SELECT * FROM grupa g
+        WHERE g.naziv = $1
+    );
+
+    IF postoji_slicna THEN
+        RAISE EXCEPTION '%', 'Već postoji grupa s tim nazivom!';
+    END IF;
+
+    INSERT INTO grupa(naziv, vlasnik_id) VALUES ($1, $2);
+END;
+$$
+LANGUAGE plpgsql;
+
 CREATE OR REPLACE FUNCTION nova_datoteka(naziv TEXT, putanja TEXT)
 RETURNS VOID
 AS $$
@@ -490,5 +510,36 @@ ON verzija_dokumenta
 FOR EACH ROW
 WHEN (pg_trigger_depth() = 0)
 EXECUTE PROCEDURE update_nove_verzije();
+
+CREATE OR REPLACE FUNCTION dodaj_vlasnika_kao_clana_grupe()
+RETURNS TRIGGER
+AS $$
+DECLARE
+    vec_dodan BOOLEAN;
+BEGIN
+    IF NEW.vlasnik_id IS NULL THEN
+        RETURN NULL;
+    END IF;
+
+    vec_dodan := EXISTS(
+        SELECT * FROM korisnik_u_grupi
+        WHERE grupa_id = NEW.id AND korisnik_id = NEW.vlasnik_id
+    );
+
+    IF NOT vec_dodan THEN
+        INSERT INTO korisnik_u_grupi(grupa_id, korisnik_id)
+        VALUES (NEW.id, NEW.vlasnik_id);
+    END IF;
+
+    RETURN NULL;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER dodavanje_vlasnika_kao_clana_grupe
+AFTER INSERT
+ON grupa
+FOR EACH ROW
+EXECUTE PROCEDURE dodaj_vlasnika_kao_clana_grupe();
 
 COMMIT;

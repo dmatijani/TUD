@@ -2,6 +2,10 @@ BEGIN TRANSACTION;
 
 -- Okidači (i funkcije)
 
+DROP TRIGGER dodavanje_vlasnika_kao_clana_grupe ON grupa;
+
+DROP FUNCTION dodaj_vlasnika_kao_clana_grupe();
+
 DROP TRIGGER update_nova_verzija ON verzija_dokumenta;
 
 DROP FUNCTION update_nove_verzije();
@@ -17,6 +21,8 @@ DROP FUNCTION dodaj_novog_korisnika_u_grupu_korisnika();
 -- Funkcije
 
 DROP FUNCTION nova_datoteka(TEXT, TEXT);
+
+DROP FUNCTION stvori_grupu(TEXT, INT);
 
 DROP FUNCTION korisnici_koji_nisu_clanovi_grupe(INT, INT);
 

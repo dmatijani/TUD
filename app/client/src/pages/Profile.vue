@@ -1,6 +1,5 @@
 <script setup>
-import { ref } from "vue";
-import { onMounted } from 'vue';
+import { ref, onMounted } from "vue";
 import { useRouter } from 'vue-router';
 import RestServices from "../services/rest.mjs";
 import AuthController from "../services/authController.mjs";
@@ -52,6 +51,7 @@ onMounted(async () => {
                 <li><RouterLink :to="'/group/' + grupa.grupa_id">Detalji grupe</RouterLink></li>
             </ul></li>
         </ul>
+        <RouterLink to="createGroup">Kreiraj novu grupu</RouterLink>
     </div>
     <ErrorMessage v-if="errorMessage != null && errorMessage != ''">{{ errorMessage }}</ErrorMessage>
 </template>

@@ -4,6 +4,7 @@ import Login from '../pages/Login.vue';
 import Registration from '../pages/Registration.vue';
 import Profile from '../pages/Profile.vue';
 import GroupDetails from '../pages/group/GroupDetails.vue';
+import CreateGroup from '../pages/group/CreateGroup.vue';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -32,6 +33,11 @@ const router = createRouter({
             path: '/group/:id',
             name: 'grupa',
             component: GroupDetails
+        },
+        {
+            path: '/createGroup',
+            name: 'kreirajGrupu',
+            component: CreateGroup
         }
     ],
 })
