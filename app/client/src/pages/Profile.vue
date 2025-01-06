@@ -4,6 +4,7 @@ import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import RestServices from "../services/rest.mjs";
 import AuthController from "../services/authController.mjs";
+import ErrorMessage from "../components/ErrorMessage.vue";
 
 const authController = new AuthController();
 const router = useRouter();
@@ -52,4 +53,5 @@ onMounted(async () => {
             </ul></li>
         </ul>
     </div>
+    <ErrorMessage v-if="errorMessage != null && errorMessage != ''">{{ errorMessage }}</ErrorMessage>
 </template>

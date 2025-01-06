@@ -226,7 +226,7 @@ BEGIN
     );
 
     IF NOT clan_grupe THEN
-        RAISE EXCEPTION '%','Korisnik nije član grupe!';
+        RAISE EXCEPTION '%', 'Korisnik nije član grupe!';
     END IF;
 
     RETURN QUERY
@@ -258,23 +258,83 @@ END;
 $$
 LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION dodaj_clana_u_grupu(vlasnik_id INT, grupa_id INT, novi_clan_id INT)
+RETURNS VOID
+AS $$
+DECLARE
+    je_vlasnik BOOLEAN;
+    vec_clan BOOLEAN;
+BEGIN
+    je_vlasnik := EXISTS(
+        SELECT * FROM grupa g
+        WHERE g.id = $2 AND g.vlasnik_id = $1
+    );
+
+    IF NOT je_vlasnik THEN
+        RAISE EXCEPTION '%', 'Niste vlasnik grupe!';
+    END IF;
+    
+    vec_clan := EXISTS(
+        SELECT * FROM korisnik_u_grupi kug
+        WHERE kug.grupa_id = $2 AND kug.korisnik_id = $3
+    );
+
+    IF vec_clan THEN
+        RAISE EXCEPTION '%', 'Korisnik je već član grupe!';
+    END IF;
+
+    INSERT INTO korisnik_u_grupi(korisnik_id, grupa_id) VALUES ($3, $2);
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION ukloni_clana_iz_grupe(vlasnik_id INT, grupa_id INT, clan_id INT)
+RETURNS VOID
+AS $$
+DECLARE
+    je_vlasnik BOOLEAN;
+    je_clan BOOLEAN;
+BEGIN
+    je_vlasnik := EXISTS(
+        SELECT * FROM grupa g
+        WHERE g.id = $2 AND g.vlasnik_id = $1
+    );
+
+    IF NOT je_vlasnik THEN
+        RAISE EXCEPTION '%', 'Niste vlasnik grupe!';
+    END IF;
+    
+    je_clan := EXISTS(
+        SELECT * FROM korisnik_u_grupi kug
+        WHERE kug.grupa_id = $2 AND kug.korisnik_id = $3
+    );
+
+    IF NOT je_clan THEN
+        RAISE EXCEPTION '%', 'Korisnik nije član grupe!';
+    END IF;
+
+    DELETE FROM korisnik_u_grupi kug WHERE kug.grupa_id = $2 AND kug.korisnik_id = $3;
+END;
+$$
+LANGUAGE plpgsql;
+
 CREATE OR REPLACE FUNCTION nova_datoteka(naziv TEXT, putanja TEXT)
 RETURNS VOID
 AS $$
-    DECLARE
-        oid OID;
-        data BYTEA;
-    BEGIN
-        oid := lo_import(putanja);
-        SELECT lo_get(oid) INTO data;
-        INSERT INTO datoteka (datoteka, naziv, velicina, hash)
-        VALUES (
-            oid,
-            naziv,
-            octet_length(data),
-            encode(sha256(data), 'hex')
-        );
-    END;
+DECLARE
+    oid OID;
+    data BYTEA;
+BEGIN
+    oid := lo_import(putanja);
+    SELECT lo_get(oid) INTO data;
+    INSERT INTO datoteka (datoteka, naziv, velicina, hash)
+    VALUES (
+        oid,
+        naziv,
+        octet_length(data),
+        encode(sha256(data), 'hex')
+    );
+END;
 $$
 LANGUAGE plpgsql;
 
