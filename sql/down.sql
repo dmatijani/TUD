@@ -18,6 +18,8 @@ DROP FUNCTION dodaj_novog_korisnika_u_grupu_korisnika();
 
 DROP FUNCTION nova_datoteka(TEXT, TEXT);
 
+DROP FUNCTION korisnici_koji_nisu_clanovi_grupe(INT, INT);
+
 DROP FUNCTION ukloni_clana_iz_grupe(INT, INT, INT);
 
 DROP FUNCTION dodaj_clana_u_grupu(INT, INT, INT);

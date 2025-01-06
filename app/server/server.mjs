@@ -78,6 +78,7 @@ function restServices() {
     server.post("/api/user/register", restUser.postUserRegister);
     server.get("/api/user/logout", restUser.getUserLogout);
     server.get("/api/user/profile", restUser.getUserProfile);
+    server.get("/api/users/notInGroup/:groupId", restUser.getUsersNotInGroup)
 
     server.get("/api/group/:groupId", restGroup.getGroupDetails)
     server.put("/api/group/addMember", restGroup.putGroupMember)

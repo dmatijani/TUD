@@ -25,7 +25,11 @@ class RestGroup {
                         }));
                     })
                     .catch((error) => {
-                        throw error;
+                        res.status(400);
+                        res.send(JSON.stringify({
+                            "success": false,
+                            "error": error.message
+                        }));
                     })
             })
             .catch((error) => {
@@ -52,11 +56,15 @@ class RestGroup {
                         res.status(201);
                         res.send(JSON.stringify({
                             "success": true,
-                            "text": "uspjesno"
+                            "text": "Korisnik je dodan u grupu!"
                         }));
                     })
                     .catch((error) => {
-                        throw error;
+                        res.status(400);
+                        res.send(JSON.stringify({
+                            "success": false,
+                            "error": error.message
+                        }));
                     })
             })
             .catch((error) => {
@@ -83,11 +91,15 @@ class RestGroup {
                         res.status(201);
                         res.send(JSON.stringify({
                             "success": true,
-                            "text": "uspjesno"
+                            "text": "Korisnik je uklonjen iz grupe!"
                         }));
                     })
                     .catch((error) => {
-                        throw error;
+                        res.status(400);
+                        res.send(JSON.stringify({
+                            "success": false,
+                            "error": error.message
+                        }));
                     })
             })
             .catch((error) => {

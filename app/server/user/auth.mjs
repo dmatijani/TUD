@@ -10,7 +10,7 @@ class Auth {
             return false;
         }
 
-        let id = req.session.user_id;
+        let id = req.session.userId;
 
         if (id == null || id == undefined) {
             return false
@@ -30,7 +30,7 @@ class Auth {
             throw new Error("Token nije validan.");
         }
 
-        return req.session.user_id;
+        return req.session.userId;
     }
 }
 

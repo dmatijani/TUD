@@ -20,7 +20,7 @@ class RestUser {
             return;
         }
 
-        let id = req.session.user_id;
+        let id = req.session.userId;
 
         let userService = new UserService(this.config);
         userService.getUserData(id)
@@ -55,7 +55,7 @@ class RestUser {
                 if (req.session.username == null || req.session.username == undefined
                     || req.session.id == null || req.session.id == undefined) {
                     req.session.username = user.username;
-                    req.session.user_id = user.user_id;
+                    req.session.userId = user.userId;
                 }
                 res.send(JSON.stringify({
                     "success": true,
@@ -131,7 +131,46 @@ class RestUser {
                         }));
                     })
                     .catch((error) => {
-                        throw error;
+                        res.status(400);
+                        res.send(JSON.stringify({
+                            "success": false,
+                            "error": error.message
+                        }));
+                    })
+            })
+            .catch((error) => {
+                res.status(400);
+                res.send(JSON.stringify({
+                    "success": false,
+                    "error": error.message
+                }));
+            })
+    }
+
+    getUsersNotInGroup = (req, res) => {
+        res.type("application/json");
+        let auth = new Auth(this.config.jwtConfig);
+
+        auth.checkAuth(req)
+            .then((id) => {
+                let groupId = req.params.groupId;
+
+                let userService = new UserService(this.config);
+                userService.getUsersNotInGroup(groupId, id)
+                    .then(async (users) => {
+                        res.status(200);
+                        res.send(JSON.stringify({
+                            "success": true,
+                            "text": "uspjesno",
+                            "users": users
+                        }));
+                    })
+                    .catch((error) => {
+                        res.status(400);
+                        res.send(JSON.stringify({
+                            "success": false,
+                            "error": error.message
+                        }));
                     })
             })
             .catch((error) => {

@@ -23,7 +23,7 @@ class UserService {
         let foundUser = foundUsers[0];
 
         return {
-            user_id: foundUser.id,
+            userId: foundUser.id,
             name: foundUser.ime,
             surname: foundUser.prezime,
             username: foundUser.korime,
@@ -53,7 +53,7 @@ class UserService {
         let foundUser = foundUsers[0];
 
         return {
-            user_id: foundUser.id,
+            userId: foundUser.id,
             name: foundUser.ime,
             surname: foundUser.prezime,
             username: foundUser.korime,
@@ -108,6 +108,24 @@ class UserService {
         let foundUser = foundUsers[0];
 
         return foundUser;
+    }
+
+    getUsersNotInGroup = async function(groupId, ownerId) {
+        if (!groupId) {
+            throw new Error("Nije dan ID grupe.");
+        }
+
+        var db = new DB(this.config.dbConfig);
+        await db.connect();
+        let params = [ownerId, groupId];
+        let foundUsers = await db.execute("SELECT * FROM korisnici_koji_nisu_clanovi_grupe($1, $2)", params);
+        await db.close();
+
+        if (!foundUsers) {
+            throw new Error("Korisnik s tim podacima ne postoji!");
+        }
+
+        return foundUsers;
     }
 }
 

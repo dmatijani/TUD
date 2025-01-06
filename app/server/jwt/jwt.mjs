@@ -21,7 +21,7 @@ class JWT {
             return false;
         }
 
-        let id = req.session.user_id;
+        let id = req.session.userId;
         if (!id) {
             return false;
         }
@@ -32,7 +32,7 @@ class JWT {
 
         let decodedToken = decodeToken(token);
 
-        if (decodedToken.user_id != id || decodedToken.username != username) {
+        if (decodedToken.userId != id || decodedToken.username != username) {
             return false;
         }
 

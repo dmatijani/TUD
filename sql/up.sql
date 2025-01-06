@@ -318,6 +318,39 @@ END;
 $$
 LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION korisnici_koji_nisu_clanovi_grupe(vlasnik_id INT, grupa_id INT)
+RETURNS TABLE (
+    id INT,
+    ime VARCHAR(50),
+    prezime VARCHAR(50),
+    email VARCHAR(50),
+    korime VARCHAR(50)
+)
+AS $$
+DECLARE
+    je_vlasnik BOOLEAN;
+BEGIN
+    je_vlasnik := EXISTS(
+        SELECT * FROM grupa g
+        WHERE g.id = $2 AND g.vlasnik_id = $1
+    );
+
+    IF NOT je_vlasnik THEN
+        RAISE EXCEPTION '%', 'Niste vlasnik grupe!';
+    END IF;
+
+    RETURN QUERY
+    SELECT k.id, k.ime, k.prezime, k.email, k.korime
+    FROM korisnik k
+    WHERE k.id NOT IN (
+        SELECT kug.korisnik_id
+        FROM korisnik_u_grupi kug
+        WHERE kug.grupa_id = $2
+    );
+END;
+$$
+LANGUAGE plpgsql;
+
 CREATE OR REPLACE FUNCTION nova_datoteka(naziv TEXT, putanja TEXT)
 RETURNS VOID
 AS $$

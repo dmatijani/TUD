@@ -3,9 +3,10 @@ import { ref } from "vue";
 import { onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useRouter } from 'vue-router';
-import RestServices from "../services/rest.mjs";
-import AuthController from "../services/authController.mjs";
-import ErrorMessage from "../components/ErrorMessage.vue";
+import RestServices from "../../services/rest.mjs";
+import AuthController from "../../services/authController.mjs";
+import ErrorMessage from "../../components/ErrorMessage.vue";
+import GroupAddUsers from "./GroupAddUsers.vue";
 
 const authController = new AuthController();
 const route = useRoute();
@@ -16,6 +17,21 @@ const groupId = route.params.id;
 
 const errorMessage = ref("");
 const groupData = ref(null);
+
+var userId = ref(null);
+var userIsOwner = false;
+
+const loadGroupData = async () => {
+    const response = await rest.sendRequest("GET", `/group/${groupId}`, null, true);
+    
+    if (response.success) {
+        groupData.value = response.group;
+
+        userIsOwner = userId.value == response.group.vlasnik_id;
+    } else {
+        errorMessage.value = response.error;
+    }
+}
 
 onMounted(async () => {
     if (!groupId) {
@@ -28,13 +44,14 @@ onMounted(async () => {
         return;
     }
 
-    const response = await rest.sendRequest("GET", `/group/${groupId}`, null, true);
-    if (response.success) {
-        groupData.value = response.group;
-    } else {
-        errorMessage.value = response.error;
-    }
+    userId.value = authController.getLoggedInUser().userId;
+
+    await loadGroupData();
 });
+
+const handleUserAdded = async() => {
+    await loadGroupData();
+}
 </script>
 
 <template>
@@ -42,7 +59,7 @@ onMounted(async () => {
     <div v-if="groupData != null">
         <h3>Osnovno</h3>
         <li>Naziv: <span>{{ groupData.naziv }}</span></li>
-        <li v-if="groupData.vlasnik.trim() != ''">Vlasnik: <span>{{ groupData.vlasnik }}</span></li>
+        <li v-if="groupData.vlasnik.trim() != ''">Vlasnik: <span>{{ groupData.vlasnik }}</span><span v-if="userIsOwner" style="font-weight: bold;"> - vi</span></li>
         <li v-if="groupData.email_vlasnika != null">Email vlasnika: <span>{{ groupData.email_vlasnika }}</span></li>
     </div>
     <div v-if="groupData != null">
@@ -54,6 +71,10 @@ onMounted(async () => {
                 <li v-if="clan.je_vlasnik">Vlasnik</li>
             </ul></li>
         </ul>
+
+        <div v-if="userIsOwner">
+            <GroupAddUsers :groupId="groupData.id" @userAdded="handleUserAdded" />
+        </div>
     </div>
     <ErrorMessage v-if="errorMessage != null && errorMessage != ''">{{ errorMessage }}</ErrorMessage>
 </template>
