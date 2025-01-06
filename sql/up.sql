@@ -303,6 +303,10 @@ BEGIN
     IF NOT je_vlasnik THEN
         RAISE EXCEPTION '%', 'Niste vlasnik grupe!';
     END IF;
+
+    IF vlasnik_id = clan_id THEN
+        RAISE EXCEPTION '%', 'Nije moguće ukloniti vlasnika grupe!';
+    END IF;
     
     je_clan := EXISTS(
         SELECT * FROM korisnik_u_grupi kug

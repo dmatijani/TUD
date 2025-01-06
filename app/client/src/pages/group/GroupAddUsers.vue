@@ -19,14 +19,22 @@ const users = ref(null);
 const selectedUserId = ref(null);
 
 const loadUsers = async() => {
+    successMessage.value = "";
+    errorMessage.value = "";
+
     const getUsersResponse = await rest.sendRequest("GET", `/users/notInGroup/${groupId}`, undefined, true);
 
     if (getUsersResponse.success) {
         users.value = getUsersResponse.users;
+        selectedUserId.value = null;
     } else {
         errorMessage.value = response.error;
     }
 }
+
+defineExpose({
+    loadUsers
+})
 
 onMounted(async () => {
     groupId = props.groupId;
@@ -49,9 +57,9 @@ const submitForm = async() => {
     }, true);
 
     if (response.success) {
-        successMessage.value = response.text;
         await loadUsers();
         emit("userAdded");
+        successMessage.value = response.text;
     } else {
         errorMessage.value = response.error;
     }
