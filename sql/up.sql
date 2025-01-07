@@ -3,10 +3,10 @@ BEGIN TRANSACTION;
 -- Tablice i enumeracije
 
 CREATE TYPE vrsta_dokumenta AS ENUM (
-    'PROJEKTNA_DOKUMENTACIJA',
-    'SEMINARSKI_RAD',
-    'ZAVRŠNI_RAD',
-    'DIPLOMSKI_RAD',
+    'PROJEKTNA DOKUMENTACIJA',
+    'SEMINARSKI RAD',
+    'ZAVRŠNI RAD',
+    'DIPLOMSKI RAD',
     'UGOVOR',
     'FAKTURA',
     'PONUDA',
@@ -24,7 +24,7 @@ CREATE TYPE vrsta_dokumenta AS ENUM (
     'IDENTIFIKACIJA',
     'PLAN',
     'PROCJENA',
-    'IZVJEŠTAJ_PROJEKTA',
+    'IZVJEŠTAJ PROJEKTA',
     'ARHIVA',
     'OSTALO'
 );
@@ -101,7 +101,7 @@ INSERT INTO pravo VALUES (
 );
 
 INSERT INTO pravo VALUES (
-    'citanje',
+    'čitanje',
     '{"read"}'
 );
 
@@ -398,6 +398,39 @@ BEGIN
         encode(sha256(data), 'hex')
     );
 END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION dohvati_grupe_i_korisnici_za_korisnika(korisnik_id INT)
+RETURNS TABLE (
+    id INT,
+    naziv VARCHAR(255),
+    korisnici JSON
+)
+AS $$
+BEGIN
+RETURN QUERY
+    SELECT
+        g.id,
+        g.naziv,
+        COALESCE(
+            (SELECT json_agg(json_build_object(
+                'korisnik_id', k.id,
+                'korisnik', CONCAT(k.ime, ' ', k.prezime)
+            ))
+            FROM korisnik_u_grupi kug
+            JOIN korisnik k ON kug.korisnik_id = k.id
+            WHERE kug.grupa_id = g.id
+            AND kug.korisnik_id != $1),
+            '[]'::json
+        ) AS clanovi
+    FROM grupa g
+    WHERE g.id IN (
+        SELECT kug2.grupa_id
+        FROM korisnik_u_grupi kug2
+        WHERE kug2.korisnik_id = $1
+    );
+    END;
 $$
 LANGUAGE plpgsql;
 

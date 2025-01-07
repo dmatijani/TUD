@@ -7,16 +7,13 @@ import SuccessMessage from "../../components/SuccessMessage.vue";
 import ErrorMessage from "../../components/ErrorMessage.vue";
 
 const authController = new AuthController();
+const rest = new RestServices();
 const router = useRouter();
 
 const successMessage = ref("");
 const errorMessage = ref("");
 
-var docTypes = [
-    "Tip 1",
-    "Tip 2",
-    "Tip 3"
-]
+const docTypes = ref([]);
 
 const name = ref("");
 const description = ref("");
@@ -25,11 +22,22 @@ const final = ref(false);
 const note = ref("");
 const file = ref(null);
 
+const loadTypes = async() => {
+    const getTypesResponse = await rest.sendRequest("GET", "/types");
+    console.log(getTypesResponse);
+
+    if (getTypesResponse.success) {
+        docTypes.value = getTypesResponse.types;
+    }
+}
+
 onMounted(async () => {
     if (!authController.isAuthenticated()) {
         router.push({ name: 'prijava' });
         return;
     }
+
+    await loadTypes();
 });
 
 const handleFileChanged = (event) => {
@@ -44,7 +52,6 @@ const submitForm = async () => {
         errorMessage.value = "Molimo odaberite datoteku!";
         return;
     }
-
     
     const formData = new FormData();
     formData.append("name", name.value);
@@ -54,8 +61,7 @@ const submitForm = async () => {
     formData.append("note", note.value);
     formData.append("file", file.value);
 
-    const rest = new RestServices();
-    const response = await rest.sendRequest("POST", "/document/create", formData, false, "multipart/form-data");
+    const response = await rest.sendRequest("POST", "/document/create", formData, true, "multipart/form-data");
 
     if (response.success) {
         successMessage.value = response.text;

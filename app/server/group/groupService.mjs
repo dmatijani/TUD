@@ -90,8 +90,20 @@ class GroupService {
         } finally {
             await db.close();
         }
+    }
 
-        return null;
+    getGroupsAndUsersForUser = async function(userId) {
+        var db = new DB(this.config.dbConfig);
+        await db.connect();
+        let params = [userId];
+        try {
+            let groups = await db.execute("SELECT* FROM dohvati_grupe_i_korisnici_za_korisnika($1);", params);
+            return groups
+        } catch (error) {
+            throw error;
+        } finally {
+            await db.close();
+        }
     }
 }
 

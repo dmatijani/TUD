@@ -20,6 +20,8 @@ DROP FUNCTION dodaj_novog_korisnika_u_grupu_korisnika();
 
 -- Funkcije
 
+DROP FUNCTION dohvati_grupe_i_korisnici_za_korisnika(INT);
+
 DROP FUNCTION nova_datoteka(TEXT, TEXT);
 
 DROP FUNCTION stvori_grupu(TEXT, INT);

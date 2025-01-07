@@ -6,6 +6,8 @@ import path from "path";
 import RestUser from "./user/restUser.mjs";
 import RestGroup from "./group/restGroup.mjs";
 import RestDocument from "./document/restDocument.mjs";
+import RestType from "./type/restType.mjs";
+import RestRole from "./role/roleService.mjs";
 import Configuration from "./config/config.mjs";
 
 var config;
@@ -74,6 +76,8 @@ function restServices() {
     let restUser = new RestUser(config);
     let restGroup = new RestGroup(config);
     let restDocument = new RestDocument(config);
+    let restType = new RestType(config);
+    let restRole = new RestRole(config);
 
     server.get("/api/user/jwt", restUser.getUserJwt);
     server.post("/api/user/login", restUser.postUserLogin);
@@ -86,8 +90,13 @@ function restServices() {
     server.post("/api/group/create", restGroup.postGroup);
     server.put("/api/group/addMember", restGroup.putGroupMember);
     server.delete("/api/group/removeMember", restGroup.deleteGroupMember);
+    server.get("/api/group/groupsAndUsersForUser", restGroup.getGroupsAndUsersForUser);
 
     server.post("/api/document/create", restDocument.postDocument);
+
+    server.get("/api/types", restType.getTypes);
+
+    server.get("/api/roles", restRole.getRoles);
 }
 
 function serveClient() {}
