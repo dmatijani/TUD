@@ -12,6 +12,8 @@ const surname = ref("");
 const email = ref("");
 const username = ref("");
 const password = ref("");
+const address = ref("");
+const phone = ref("");
 
 const submitForm = async () => {
     successMessage.value = "";
@@ -24,6 +26,8 @@ const submitForm = async () => {
         email: email.value,
         username: username.value,
         password: password.value,
+        address: address.value,
+        phone: phone.value
     });
 
     if (response.success) {
@@ -58,6 +62,14 @@ const submitForm = async () => {
                 Lozinka
             </label>
             <input type="password" id="password" v-model="password" placeholder="Lozinka" required />
+            <label for="address">
+                Adresa
+            </label>
+            <input type="text" id="address" v-model="address" placeholder="Adresa (neobavezno)" />
+            <label for="phone">
+                Telefon
+            </label>
+            <input type="text" id="phone" v-model="phone" placeholder="Telefon (neobavezno)" />
             <button type="submit">Registriraj se</button>
         </fieldset>
     </form>

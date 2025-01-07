@@ -77,12 +77,18 @@ class UserService {
         if (!data.password) {
             throw new Error("Lozinka nije unesena.");
         }
+        if (!data.address) {
+            data.address = "";
+        }
+        if (!data.phone) {
+            data.phone = "";
+        }
 
         var db = new DB(this.config.dbConfig);
         await db.connect();
-        let params = [data.name, data.surname, data.username, data.email, data.password];
+        let params = [data.name, data.surname, data.username, data.email, data.password, data.address, data.phone];
         try {
-            await db.execute("SELECT registriraj_korisnika($1, $2, $3, $4, $5);", params);
+            await db.execute("SELECT registriraj_korisnika($1, $2, $3, $4, $5, $6, $7);", params);
         } catch (error) {
             throw error;
         } finally {

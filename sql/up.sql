@@ -125,7 +125,7 @@ CREATE TABLE pristup_grupa (
 
 -- Funkcije
 
-CREATE OR REPLACE FUNCTION registriraj_korisnika(ime TEXT, prezime TEXT, novo_korime TEXT, novi_email TEXT, lozinka TEXT)
+CREATE OR REPLACE FUNCTION registriraj_korisnika(ime TEXT, prezime TEXT, novo_korime TEXT, novi_email TEXT, lozinka TEXT, adresa TEXT, telefon TEXT)
 RETURNS VOID
 AS $$
     DECLARE
@@ -154,12 +154,14 @@ AS $$
             RAISE EXCEPTION '%', 'Email nije ispravan!';
         END IF;
 
-        INSERT INTO korisnik(ime, prezime, korime, email, lozinka_hash) VALUES (
+        INSERT INTO korisnik(ime, prezime, korime, email, lozinka_hash, adresa, telefon) VALUES (
             ime,
             prezime,
             novo_korime,
             novi_email,
-            encode(sha256(lozinka::bytea), 'hex')
+            encode(sha256(lozinka::bytea), 'hex'),
+            adresa,
+            telefon
         );
     END;
 $$
@@ -356,10 +358,11 @@ $$
 LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION stvori_grupu(naziv TEXT, vlasnik_id INT)
-RETURNS VOID
+RETURNS INT
 AS $$
 DECLARE
     postoji_slicna BOOLEAN;
+    novi_id INT;
 BEGIN
     postoji_slicna := EXISTS(
         SELECT * FROM grupa g
@@ -370,7 +373,10 @@ BEGIN
         RAISE EXCEPTION '%', 'Već postoji grupa s tim nazivom!';
     END IF;
 
-    INSERT INTO grupa(naziv, vlasnik_id) VALUES ($1, $2);
+    INSERT INTO grupa(naziv, vlasnik_id) VALUES ($1, $2)
+    RETURNING id INTO novi_id;
+
+    RETURN novi_id;
 END;
 $$
 LANGUAGE plpgsql;

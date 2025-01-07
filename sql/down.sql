@@ -34,7 +34,7 @@ DROP FUNCTION podaci_o_grupi(INT, INT);
 
 DROP FUNCTION podaci_o_korisniku(INT);
 
-DROP FUNCTION registriraj_korisnika(TEXT, TEXT, TEXT, TEXT, TEXT);
+DROP FUNCTION registriraj_korisnika(TEXT, TEXT, TEXT, TEXT, TEXT, TEXT, TEXT);
 
 -- Tablice i enumeracije
 

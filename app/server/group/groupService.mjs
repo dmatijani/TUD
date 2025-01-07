@@ -82,12 +82,16 @@ class GroupService {
         await db.connect();
         let params = [groupName, creatorId];
         try {
-            await db.execute("SELECT stvori_grupu($1, $2);", params);
+            let result = await db.execute("SELECT stvori_grupu($1, $2);", params);
+            let newGroupId = result[0].stvori_grupu;
+            return newGroupId;
         } catch (error) {
             throw error;
         } finally {
             await db.close();
         }
+
+        return null;
     }
 }
 

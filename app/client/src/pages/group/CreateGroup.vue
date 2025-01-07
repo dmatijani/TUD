@@ -13,6 +13,7 @@ const successMessage = ref("");
 const errorMessage = ref("");
 
 const name = ref("");
+const newGroupId = ref(null);
 
 onMounted(() => {
     if (!authController.isAuthenticated()) {
@@ -23,6 +24,7 @@ onMounted(() => {
 const submitForm = async () => {
     successMessage.value = "";
     errorMessage.value = "";
+    newGroupId.value = null;
 
     if (name.value == null || name.value == "") {
         errorMessage.value = "Morate unijeti ime!";
@@ -35,6 +37,8 @@ const submitForm = async () => {
 
     if (response.success) {
         successMessage.value = response.text;
+        newGroupId.value = response.newGroupId;
+        console.log(newGroupId.value);
     } else {
         errorMessage.value = response.error;
     }
@@ -52,7 +56,7 @@ const submitForm = async () => {
     </form>
     <SuccessMessage v-if="successMessage != null && successMessage != ''">
         <span>{{ successMessage }}</span>
-        <RouterLink to="/profile">Odi na profil</RouterLink>
+        <RouterLink v-if="newGroupId != null" :to="'/group/' + newGroupId">Odi na novokreiranu grupu</RouterLink>
     </SuccessMessage>
     <ErrorMessage v-if="errorMessage != null && errorMessage != ''">{{ errorMessage }}</ErrorMessage>
 </template>

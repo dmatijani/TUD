@@ -51,11 +51,12 @@ class RestGroup {
 
                 let groupService = new GroupService(this.config);
                 groupService.createGroup(groupName, userId)
-                    .then(async () => {
+                    .then(async (newGroupId) => {
                         res.status(201);
                         res.send(JSON.stringify({
                             "success": true,
-                            "text": "Grupa uspješno kreirana!"
+                            "text": "Grupa uspješno kreirana!",
+                            "newGroupId": newGroupId
                         }));
                     })
                     .catch((error) => {
