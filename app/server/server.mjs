@@ -86,11 +86,11 @@ function restServices() {
     server.get("/api/user/profile", restUser.getUserProfile);
     server.get("/api/users/notInGroup/:groupId", restUser.getUsersNotInGroup);
 
+    server.get("/api/group/groupsAndUsersForUser", restGroup.getGroupsAndUsersForUser);
     server.get("/api/group/:groupId", restGroup.getGroupDetails);
     server.post("/api/group/create", restGroup.postGroup);
     server.put("/api/group/addMember", restGroup.putGroupMember);
     server.delete("/api/group/removeMember", restGroup.deleteGroupMember);
-    server.get("/api/group/groupsAndUsersForUser", restGroup.getGroupsAndUsersForUser);
 
     server.post("/api/document/create", restDocument.postDocument);
 

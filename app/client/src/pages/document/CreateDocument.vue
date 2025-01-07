@@ -14,6 +14,8 @@ const successMessage = ref("");
 const errorMessage = ref("");
 
 const docTypes = ref([]);
+const roles = ref([]);
+const groupsAndUsers = ref([]);
 
 const name = ref("");
 const description = ref("");
@@ -24,10 +26,28 @@ const file = ref(null);
 
 const loadTypes = async() => {
     const getTypesResponse = await rest.sendRequest("GET", "/types");
-    console.log(getTypesResponse);
+    console.log(getTypesResponse); // TODO: maknuti
 
     if (getTypesResponse.success) {
         docTypes.value = getTypesResponse.types;
+    }
+}
+
+const loadRoles = async() => {
+    const getRolesResponse = await rest.sendRequest("GET", "/roles");
+    console.log(getRolesResponse); // TODO: maknuti
+
+    if (getRolesResponse.success) {
+        roles.value = getRolesResponse.types;
+    }
+}
+
+const loadGroupsAndUsersForUser = async() => {
+    const getGroupsAndRolesResponse = await rest.sendRequest("GET", "/group/groupsAndUsersForUser", undefined, true);
+    console.log(getGroupsAndRolesResponse); // TODO: maknuti
+
+    if (getGroupsAndRolesResponse.success) {
+        groupsAndUsers.value = getGroupsAndRolesResponse.groups;
     }
 }
 
@@ -38,6 +58,8 @@ onMounted(async () => {
     }
 
     await loadTypes();
+    await loadRoles();
+    await loadGroupsAndUsersForUser();
 });
 
 const handleFileChanged = (event) => {

@@ -97,7 +97,7 @@ class GroupService {
         await db.connect();
         let params = [userId];
         try {
-            let groups = await db.execute("SELECT* FROM dohvati_grupe_i_korisnici_za_korisnika($1);", params);
+            let groups = await db.execute("SELECT * FROM dohvati_grupe_i_korisnici_za_korisnika($1);", params);
             return groups
         } catch (error) {
             throw error;
