@@ -5,6 +5,7 @@ import { fileURLToPath } from "url";
 import path from "path";
 import RestUser from "./user/restUser.mjs";
 import RestGroup from "./group/restGroup.mjs";
+import RestDocument from "./document/restDocument.mjs";
 import Configuration from "./config/config.mjs";
 
 var config;
@@ -72,6 +73,7 @@ function startServer() {
 function restServices() {
     let restUser = new RestUser(config);
     let restGroup = new RestGroup(config);
+    let restDocument = new RestDocument(config);
 
     server.get("/api/user/jwt", restUser.getUserJwt);
     server.post("/api/user/login", restUser.postUserLogin);
@@ -85,14 +87,7 @@ function restServices() {
     server.put("/api/group/addMember", restGroup.putGroupMember);
     server.delete("/api/group/removeMember", restGroup.deleteGroupMember);
 
-    server.post("/api/document/create", (req, res) => {
-        console.log(req);
-        res.type("application/json");
-        res.send(JSON.stringify({
-            success: true,
-            "text": "Dobiveno na serveru!"
-        }));
-    });
+    server.post("/api/document/create", restDocument.postDocument);
 }
 
 function serveClient() {}

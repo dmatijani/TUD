@@ -54,7 +54,6 @@ class RestSender {
     
         try {
             let response = await fetch(this.url + path, parameters);
-            console.log(response);
             let data = JSON.parse(await response.text());
             data.status = response.status;
             data.headers = response.headers;

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "server.mjs",
   "scripts": {
-    "pripremi": "npm install fs express cors express-session pg jsonwebtoken",
+    "pripremi": "npm install fs express cors express-session pg jsonwebtoken formidable",
     "start": "node server.mjs"
   },
   "author": "David Matijanić",
@@ -13,6 +13,7 @@
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "express-session": "^1.18.1",
+    "formidable": "^3.5.2",
     "fs": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.13.1"

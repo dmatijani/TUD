@@ -50,9 +50,9 @@ DROP TABLE korisnik_u_grupi;
 
 DROP TABLE grupa;
 
-DROP TABLE korisnik;
-
 DROP TABLE verzija_dokumenta;
+
+DROP TABLE korisnik;
 
 DROP TABLE dokument;
 

@@ -41,19 +41,7 @@ CREATE TABLE dokument (
     id SERIAL PRIMARY KEY,
     naziv VARCHAR(255) NOT NULL,
     opis TEXT,
-    dodatno JSON NOT NULL DEFAULT '{}'::JSON,
     vrsta vrsta_dokumenta NOT NULL DEFAULT 'OSTALO'
-);
-
-CREATE TABLE verzija_dokumenta (
-    dokument_id INT REFERENCES dokument(id)
-    ON UPDATE CASCADE ON DELETE RESTRICT,
-    vrijedi TSRANGE NOT NULL DEFAULT tsrange(NOW()::TIMESTAMP, 'infinity'::TIMESTAMP),
-    verzija INT NOT NULL DEFAULT 1,
-    datoteka_id INT REFERENCES datoteka(id),
-    finalna BOOLEAN NOT NULL DEFAULT FALSE,
-    napomena TEXT,
-    PRIMARY KEY (dokument_id, vrijedi)
 );
 
 CREATE TABLE korisnik (
@@ -66,6 +54,18 @@ CREATE TABLE korisnik (
     vrijeme_registracije TIMESTAMP NOT NULL DEFAULT NOW()::TIMESTAMP,
     adresa TEXT,
     telefon TEXT
+);
+
+CREATE TABLE verzija_dokumenta (
+    dokument_id INT REFERENCES dokument(id)
+    ON UPDATE CASCADE ON DELETE RESTRICT,
+    vrijedi TSRANGE NOT NULL DEFAULT tsrange(NOW()::TIMESTAMP, 'infinity'::TIMESTAMP),
+    verzija INT NOT NULL DEFAULT 1,
+    datoteka_id INT REFERENCES datoteka(id),
+    finalna BOOLEAN NOT NULL DEFAULT FALSE,
+    kreirao_id INT NOT NULL REFERENCES korisnik(id),
+    napomena TEXT,
+    PRIMARY KEY (dokument_id, vrijedi)
 );
 
 CREATE TABLE grupa (
