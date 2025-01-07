@@ -51,7 +51,7 @@ onMounted(async () => {
                 <li><RouterLink :to="'/group/' + grupa.grupa_id">Detalji grupe</RouterLink></li>
             </ul></li>
         </ul>
-        <RouterLink to="createGroup">Kreiraj novu grupu</RouterLink>
+        <RouterLink to="/group/create">Kreiraj novu grupu</RouterLink>
     </div>
     <ErrorMessage v-if="errorMessage != null && errorMessage != ''">{{ errorMessage }}</ErrorMessage>
 </template>

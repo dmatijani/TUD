@@ -5,6 +5,9 @@ import Registration from '../pages/Registration.vue';
 import Profile from '../pages/Profile.vue';
 import GroupDetails from '../pages/group/GroupDetails.vue';
 import CreateGroup from '../pages/group/CreateGroup.vue';
+import DocumentHome from '../pages/document/DocumentHome.vue';
+import MyDocuments from '../pages/document/MyDocuments.vue';
+import CreateDocument from '../pages/document/CreateDocument.vue';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -35,9 +38,24 @@ const router = createRouter({
             component: GroupDetails
         },
         {
-            path: '/createGroup',
+            path: '/group/create',
             name: 'kreirajGrupu',
             component: CreateGroup
+        },
+        {
+            path: '/documents',
+            name: 'dokumenti',
+            component: DocumentHome
+        },
+        {
+            path: '/documents/myDocuments',
+            name: 'mojiDokumenti',
+            component: MyDocuments
+        },
+        {
+            path: '/documents/create',
+            name: 'kreirajDokument',
+            component: CreateDocument
         }
     ],
 })

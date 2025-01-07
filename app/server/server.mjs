@@ -84,6 +84,15 @@ function restServices() {
     server.post("/api/group/create", restGroup.postGroup);
     server.put("/api/group/addMember", restGroup.putGroupMember);
     server.delete("/api/group/removeMember", restGroup.deleteGroupMember);
+
+    server.post("/api/document/create", (req, res) => {
+        console.log(req);
+        res.type("application/json");
+        res.send(JSON.stringify({
+            success: true,
+            "text": "Dobiveno na serveru!"
+        }));
+    });
 }
 
 function serveClient() {}

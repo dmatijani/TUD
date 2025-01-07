@@ -34,6 +34,7 @@ const loggedInUserName = () => {
             <li><RouterLink to="/login">Prijava</RouterLink></li>
         </NotAuthenticated>
         <Authenticated>
+            <li><RouterLink to="/documents">Dokumenti</RouterLink></li>
             <li><span>Prijavljen: {{ loggedInUserName() }}</span></li>
             <li><RouterLink to="/profile">Profil</RouterLink></li>
             <li><span v-on:click="logout()">Odjava</span></li>
