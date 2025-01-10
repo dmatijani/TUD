@@ -46,9 +46,7 @@ DROP TABLE pristup_grupa;
 
 DROP TABLE pristup_korisnik;
 
-DROP TABLE pravo;
-
-DROP TYPE radnja;
+DROP TYPE pravo;
 
 DROP TABLE korisnik_u_grupi;
 

@@ -83,16 +83,9 @@ CREATE TABLE korisnik_u_grupi (
     PRIMARY KEY (korisnik_id, grupa_id)
 );
 
-CREATE TYPE radnja AS ENUM (
-    'create',
-    'read',
-    'update',
-    'delete'
-);
-
-CREATE TABLE pravo (
-    naziv TEXT PRIMARY KEY,
-    radnje radnja[] NOT NULL
+CREATE TYPE pravo AS ENUM (
+    'vlasnik',
+    'čitanje'
 );
 
 CREATE TABLE pristup_korisnik (
@@ -100,7 +93,7 @@ CREATE TABLE pristup_korisnik (
     ON UPDATE CASCADE ON DELETE RESTRICT,
     dokument_id INT REFERENCES dokument(id)
     ON UPDATE CASCADE ON DELETE RESTRICT,
-    pravo TEXT REFERENCES pravo(naziv),
+    pravo pravo,
     PRIMARY KEY (korisnik_id, dokument_id)
 );
 
@@ -109,7 +102,7 @@ CREATE TABLE pristup_grupa (
     ON UPDATE CASCADE ON DELETE RESTRICT,
     dokument_id INT REFERENCES dokument(id)
     ON UPDATE CASCADE ON DELETE RESTRICT,
-    pravo TEXT REFERENCES pravo(naziv),
+    pravo pravo,
     PRIMARY KEY (grupa_id, dokument_id)
 );
 
@@ -446,8 +439,6 @@ DECLARE
     postoji_dokument BOOLEAN;
     novi_dokument_id INT;
     nova_datoteka_id INT;
-    pravo_vlasnik_postoji BOOLEAN;
-    pravo_citanje_postoji BOOLEAN;
     obj JSON;
 BEGIN
     postoji_dokument := EXISTS(
@@ -467,28 +458,6 @@ BEGIN
     INSERT INTO verzija_dokumenta(dokument_id, datoteka_id, finalna, kreirao_id, napomena)
     VALUES (novi_dokument_id, nova_datoteka_id, $5, $1, $6);
 
-    pravo_vlasnik_postoji := EXISTS(
-        SELECT * FROM pravo p WHERE p.naziv = 'vlasnik'
-    );
-
-    IF NOT pravo_vlasnik_postoji THEN
-        INSERT INTO pravo VALUES (
-            'vlasnik',
-            '{"create", "read", "update", "delete"}'
-        );
-    END IF;
-
-    pravo_citanje_postoji := EXISTS(
-        SELECT * FROM pravo p WHERE p.naziv = 'čitanje'
-    );
-
-    IF NOT pravo_citanje_postoji THEN
-        INSERT INTO pravo VALUES (
-            'čitanje',
-            '{"read"}'
-        );
-    END IF;
-
     INSERT INTO pristup_korisnik(korisnik_id, dokument_id, pravo)
     VALUES ($1, novi_dokument_id, 'vlasnik');
 
@@ -498,7 +467,7 @@ BEGIN
             VALUES (
                 (obj->>'selectedGroup')::INT,
                 novi_dokument_id,
-                (obj->>'selectedRole')::TEXT
+                (obj->>'selectedRole')::pravo
             );
         END LOOP;
     END IF;
@@ -509,7 +478,7 @@ BEGIN
             VALUES (
                 (obj->>'selectedUser')::INT,
                 novi_dokument_id,
-                (obj->>'selectedRole')::TEXT
+                (obj->>'selectedRole')::pravo
             );
         END LOOP;
     END IF;

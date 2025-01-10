@@ -55,6 +55,7 @@ const loadTypes = async() => {
     const getTypesResponse = await rest.sendRequest("GET", "/types");
 
     if (getTypesResponse.success) {
+        console.log(getTypesResponse);
         docTypes.value = getTypesResponse.types;
     }
 }
@@ -63,6 +64,7 @@ const loadRoles = async() => {
     const getRolesResponse = await rest.sendRequest("GET", "/roles");
 
     if (getRolesResponse.success) {
+        console.log(getRolesResponse);
         roles.value = getRolesResponse.roles;
     }
 }
@@ -169,7 +171,7 @@ const submitForm = async () => {
                     </option>
                 </select>
                 <select v-model="groupValue.selectedRole">
-                    <option v-for="possibleRole in roles.map((r) => r.name)" :value="possibleRole">{{ possibleRole }}</option>
+                    <option v-for="possibleRole in roles" :value="possibleRole">{{ possibleRole }}</option>
                 </select>
                 <input type="button" v-on:click="removeGroup(groupIndex)" value="-">
             </div>
@@ -184,7 +186,7 @@ const submitForm = async () => {
                     </option>
                 </select>
                 <select v-model="userValue.selectedRole">
-                    <option v-for="possibleRole in roles.map((r) => r.name)" :value="possibleRole">{{ possibleRole }}</option>
+                    <option v-for="possibleRole in roles" :value="possibleRole">{{ possibleRole }}</option>
                 </select>
                 <input type="button" v-on:click="removeUser(userIndex)" value="-">
             </div>

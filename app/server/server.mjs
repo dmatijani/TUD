@@ -7,7 +7,7 @@ import RestUser from "./user/restUser.mjs";
 import RestGroup from "./group/restGroup.mjs";
 import RestDocument from "./document/restDocument.mjs";
 import RestType from "./type/restType.mjs";
-import RestRole from "./role/roleService.mjs";
+import RestRole from "./role/restRole.mjs";
 import Configuration from "./config/config.mjs";
 
 var config;
