@@ -62,6 +62,8 @@ async function handleFileUpload(config, userId, fields, files) {
             fieldsParsed.documentType,
             fieldsParsed.final,
             fieldsParsed.note,
+            JSON.parse(fieldsParsed.groupsToShare),
+            JSON.parse(fieldsParsed.usersToShare),
             filepath,
             filename
         );

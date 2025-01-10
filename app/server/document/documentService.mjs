@@ -6,13 +6,15 @@ class DocumentService {
         this.config = config;
     }
 
-    uploadFirstDocumentVersion = async function(userId, name, description, documentType, final, note, filepath, filename) {
+    uploadFirstDocumentVersion = async function(userId, name, description, documentType, final, note, groupsToShare, usersToShare, filepath, filename) {
         console.log(userId);
         console.log(name);
         console.log(description);
         console.log(documentType);
         console.log(final);
         console.log(note);
+        console.log(groupsToShare);
+        console.log(usersToShare);
         console.log(filepath);
         console.log(filename);
 
