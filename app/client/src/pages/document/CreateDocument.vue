@@ -13,6 +13,8 @@ const router = useRouter();
 const successMessage = ref("");
 const errorMessage = ref("");
 
+const newDocumentId = ref(null);
+
 const docTypes = ref([]);
 const roles = ref([]);
 const groups = ref([]);
@@ -117,6 +119,7 @@ const submitForm = async () => {
     const response = await rest.sendRequest("POST", "/document/create", formData, true, "multipart/form-data");
 
     if (response.success) {
+        newDocumentId.value = response.newDocumentId;
         successMessage.value = response.text;
     } else {
         errorMessage.value = response.error;
@@ -192,7 +195,7 @@ const submitForm = async () => {
     </form>
     <SuccessMessage v-if="successMessage != null && successMessage != ''">
         <span>{{ successMessage }}</span>
-        <RouterLink to="/login">Odi na prijavu</RouterLink> <!-- TODO: odi na novokreirani dokument -->
+        <RouterLink :to="'/documents/myDocuments/' + newDocumentId">Odi na prijavu</RouterLink> <!-- TODO: odi na novokreirani dokument -->
     </SuccessMessage>
     <ErrorMessage v-if="errorMessage != null && errorMessage != ''">{{ errorMessage }}</ErrorMessage>
 </template>

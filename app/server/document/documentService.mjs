@@ -7,26 +7,24 @@ class DocumentService {
     }
 
     uploadFirstDocumentVersion = async function(userId, name, description, documentType, final, note, groupsToShare, usersToShare, filepath, filename) {
-        console.log(userId);
-        console.log(name);
-        console.log(description);
-        console.log(documentType);
-        console.log(final);
-        console.log(note);
-        console.log(groupsToShare);
-        console.log(usersToShare);
-        console.log(filepath);
-        console.log(filename);
+        var db = new DB(this.config.dbConfig);
+        await db.connect();
+        try {
+            var groupsToShareJson = JSON.stringify(groupsToShare);
+            var usersToShareJson = JSON.stringify(usersToShare);
 
-        // TODO: proslijediti sve ovo u bazinu proceduru
+            let params = [userId, name, description, documentType, final, note, groupsToShareJson, usersToShareJson, filepath, filename];
+            let newDocumentId = await db.execute("SELECT prva_verzija_dokumenta($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);", params);
+            return newDocumentId[0].prva_verzija_dokumenta;
+        } catch (error) {
+            throw error;
+        } finally {
+            await db.close();
 
-        // TODO: vratiti odgovor (kao kod dodavanja nove grupe)
-
-        if (fs.existsSync(filepath)) {
-            fs.unlink(filepath, () => {});
+            if (fs.existsSync(filepath)) {
+                fs.unlink(filepath, () => {});
+            }
         }
-
-        return 100;
     }
 }
 

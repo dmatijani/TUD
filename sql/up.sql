@@ -95,16 +95,6 @@ CREATE TABLE pravo (
     radnje radnja[] NOT NULL
 );
 
-INSERT INTO pravo VALUES (
-    'vlasnik',
-    '{"create", "read", "update", "delete"}'
-);
-
-INSERT INTO pravo VALUES (
-    'čitanje',
-    '{"read"}'
-);
-
 CREATE TABLE pristup_korisnik (
     korisnik_id INT REFERENCES korisnik(id)
     ON UPDATE CASCADE ON DELETE RESTRICT,
@@ -382,9 +372,10 @@ $$
 LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION nova_datoteka(naziv TEXT, putanja TEXT)
-RETURNS VOID
+RETURNS INT
 AS $$
 DECLARE
+    novi_id INT;
     oid OID;
     data BYTEA;
 BEGIN
@@ -396,7 +387,10 @@ BEGIN
         naziv,
         octet_length(data),
         encode(sha256(data), 'hex')
-    );
+    )
+    RETURNING id INTO novi_id;
+
+    RETURN novi_id;
 END;
 $$
 LANGUAGE plpgsql;
@@ -431,6 +425,97 @@ RETURN QUERY
         WHERE kug2.korisnik_id = $1
     );
     END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION prva_verzija_dokumenta(
+    korisnik_id INT,
+    naziv TEXT,
+    opis TEXT,
+    vrsta vrsta_dokumenta,
+    finalna BOOLEAN,
+    napomena TEXT,
+    dijeli_s_grupama JSON,
+    dijeli_s_korisnicima JSON,
+    putanja TEXT,
+    naziv_datoteke TEXT
+)
+RETURNS INT
+AS $$
+DECLARE
+    postoji_dokument BOOLEAN;
+    novi_dokument_id INT;
+    nova_datoteka_id INT;
+    pravo_vlasnik_postoji BOOLEAN;
+    pravo_citanje_postoji BOOLEAN;
+    obj JSON;
+BEGIN
+    postoji_dokument := EXISTS(
+        SELECT * FROM dokument d
+        WHERE d.naziv = $2
+    );
+
+    IF postoji_dokument THEN
+        RAISE EXCEPTION '%', 'Dokument s tim nazivom već postoji!';
+    END IF;
+
+    INSERT INTO dokument(naziv, opis, vrsta) VALUES($2, $3, $4)
+    RETURNING id INTO novi_dokument_id;
+
+    SELECT nova_datoteka($10, $9) INTO nova_datoteka_id;
+
+    INSERT INTO verzija_dokumenta(dokument_id, datoteka_id, finalna, kreirao_id, napomena)
+    VALUES (novi_dokument_id, nova_datoteka_id, $5, $1, $6);
+
+    pravo_vlasnik_postoji := EXISTS(
+        SELECT * FROM pravo p WHERE p.naziv = 'vlasnik'
+    );
+
+    IF NOT pravo_vlasnik_postoji THEN
+        INSERT INTO pravo VALUES (
+            'vlasnik',
+            '{"create", "read", "update", "delete"}'
+        );
+    END IF;
+
+    pravo_citanje_postoji := EXISTS(
+        SELECT * FROM pravo p WHERE p.naziv = 'čitanje'
+    );
+
+    IF NOT pravo_citanje_postoji THEN
+        INSERT INTO pravo VALUES (
+            'čitanje',
+            '{"read"}'
+        );
+    END IF;
+
+    INSERT INTO pristup_korisnik(korisnik_id, dokument_id, pravo)
+    VALUES ($1, novi_dokument_id, 'vlasnik');
+
+    IF $7 IS NOT NULL AND json_typeof($7) = 'array' THEN
+        FOR obj IN SELECT * FROM json_array_elements($7) LOOP
+            INSERT INTO pristup_grupa(grupa_id, dokument_id, pravo)
+            VALUES (
+                (obj->>'selectedGroup')::INT,
+                novi_dokument_id,
+                (obj->>'selectedRole')::TEXT
+            );
+        END LOOP;
+    END IF;
+
+    IF $8 IS NOT NULL AND json_typeof($8) = 'array' THEN
+        FOR obj IN SELECT * FROM json_array_elements($8) LOOP
+            INSERT INTO pristup_korisnik(korisnik_id, dokument_id, pravo)
+            VALUES (
+                (obj->>'selectedUser')::INT,
+                novi_dokument_id,
+                (obj->>'selectedRole')::TEXT
+            );
+        END LOOP;
+    END IF;
+
+    RETURN novi_dokument_id;
+END;
 $$
 LANGUAGE plpgsql;
 
