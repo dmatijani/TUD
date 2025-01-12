@@ -52,10 +52,6 @@ const downloadFile = async (fileId, fileName) => {
 
 <template>
     <h2>Detalji dokumenta</h2>
-    <div v-if="documentData != null && documentData.pravo == 'vlasnik'">
-        <!-- TODO: dodavanje nove verzije dokumentu (ako je korisnik vlasnik) -->
-        <p>Dodaj novu verziju ???</p>
-    </div>
     <div v-if="documentData != null">
         <h3>Osnovno</h3>
         <ul>
@@ -67,6 +63,10 @@ const downloadFile = async (fileId, fileName) => {
     </div>
     <div v-if="documentData != null">
         <h3>Verzije</h3>
+        <div v-if="documentData.pravo == 'vlasnik'">
+            <!-- TODO: dodavanje nove verzije dokumentu (ako je korisnik vlasnik) -->
+            <p>Dodaj novu verziju ???</p>
+        </div>
         <ul>
             <li v-for="verzija in documentData.verzije"><ul>
                 <li>Kreirana: <span>{{ verzija.vrijedi_od }}</span></li>

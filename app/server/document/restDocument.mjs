@@ -26,12 +26,48 @@ class RestDocument {
                 let auth = new Auth(this.config.jwtConfig);
                 let userId = await auth.checkAuth(req);
 
-                let newDocumentId = await handleFileUpload(this.config, userId, fields, files);
+                let newDocumentId = await handleDocumentUpload(this.config, userId, fields, files);
                 
                 res.send(JSON.stringify({
                     "success": true,
                     "text": "Datoteka uspješno dodana!",
                     "newDocumentId": newDocumentId
+                }));
+            } catch (error) {
+                res.status(400);
+                res.send(JSON.stringify({
+                    "success": false,
+                    "error": error.message
+                }));
+                return;
+            }
+        });
+    }
+
+    postDocumentVersion = (req, res) => {
+        res.type("application/json");
+
+        var form = formidable()
+        form.parse(req, async (error, fields, files) => {
+            if (error) {
+                res.status(400);
+                res.send(JSON.stringify({
+                    "success": false,
+                    "error": error.message
+                }));
+                return;
+            }
+
+            try {
+                let auth = new Auth(this.config.jwtConfig);
+                let userId = await auth.checkAuth(req);
+                let documentId = req.params.documentId;
+
+                handleNewVersionUpload(this.config, userId, documentId, fields, files);
+                
+                res.send(JSON.stringify({
+                    "success": true,
+                    "text": "Datoteka uspješno dodana!"
                 }));
             } catch (error) {
                 res.status(400);
@@ -149,7 +185,7 @@ class RestDocument {
     }
 }
 
-async function handleFileUpload(config, userId, fields, files) {
+async function handleDocumentUpload(config, userId, fields, files) {
     try {
         let fieldsParsed = Object.fromEntries(
             Object.entries(fields).map(([key, value]) => [key, value[0]])
@@ -179,5 +215,28 @@ async function handleFileUpload(config, userId, fields, files) {
     }
 }
 
+async function handleNewVersionUpload(config, userId, documentId, fields, files) {
+    try {
+        let fieldsParsed = Object.fromEntries(
+            Object.entries(fields).map(([key, value]) => [key, value[0]])
+        );
+        
+        let file = files.file[0];
+        let filepath = file.filepath;
+        let filename = file.originalFilename;
+        
+        let documentService = new DocumentService(config);
+        await documentService.uploadNewDocumentVersion(
+            userId,
+            documentId,
+            fieldsParsed.final,
+            fieldsParsed.note,
+            filepath,
+            filename
+        );
+    } catch (error) {
+        throw error;
+    }
+}
 
 export default RestDocument;

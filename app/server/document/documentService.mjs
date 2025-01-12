@@ -25,6 +25,21 @@ class DocumentService {
         }
     }
 
+    uploadNewDocumentVersion = async function(userId, documentId, final, note, filepath, filename) {
+        var db = new DB(this.config.dbConfig);
+        await db.connect();
+        try {
+            let params = [userId, documentId, final, note, filepath, filename];
+            await db.execute("SELECT nova_verzija_dokumenta($1, $2, $3, $4, $5, $6);", params);
+        } catch (error) {
+            throw error;
+        } finally {
+            await db.close();
+
+            await this.freeFile(filepath);
+        }
+    }
+
     getDocumentList = async function(userId, role) {
         if (role != 'vlasnik' && role != 'čitanje') {
             throw new Error("Uloga mora biti 'vlasnik' ili 'čitanje'!");
