@@ -77,7 +77,7 @@ const removeUser = async(selectedUserId) => {
 </script>
 
 <template>
-    <h2>Grupa <span v-if="groupData">{{ groupData.naziv }}</span></h2>
+    <h2>Grupa <span v-if="groupData">'{{ groupData.naziv }}'</span></h2>
     <div v-if="groupData != null">
         <h3>Osnovno</h3>
         <li>Naziv: <span>{{ groupData.naziv }}</span></li>

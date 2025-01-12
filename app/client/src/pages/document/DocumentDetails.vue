@@ -51,7 +51,7 @@ const downloadFile = async (fileId, fileName) => {
 </script>
 
 <template>
-    <h2>Detalji dokumenta</h2>
+    <h2>Detalji dokumenta <span v-if="documentData">'{{ documentData.naziv }}'</span></h2>
     <div v-if="documentData != null">
         <h3>Osnovno</h3>
         <ul>

@@ -16,6 +16,7 @@ onMounted(async () => {
 
 <template>
     <h2>Dokumenti</h2>
+    <RouterLink to="/documents/create">Stvori novi dokument</RouterLink>
     <RouterLink to="/documents/myDocuments">Moji dokumenti</RouterLink>
     <RouterLink to="/documents/sharedDocuments">Dokumenti dijeljeni sa mnom</RouterLink>
 </template>

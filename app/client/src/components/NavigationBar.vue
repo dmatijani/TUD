@@ -24,10 +24,17 @@ const loggedInUserName = () => {
     let user = authController.getLoggedInUser();
     return `${user.name} ${user.surname}`;
 }
+
+const goBack = () => {
+    router.go(-1);
+}
 </script>
 
 <template>
     <ul>
+        <Authenticated>
+            <button v-on:click="goBack"><</button>
+        </Authenticated>
         <li><RouterLink to="/">Početna</RouterLink></li>
         <li><RouterLink to="/register">Registracija</RouterLink></li>
         <NotAuthenticated>
