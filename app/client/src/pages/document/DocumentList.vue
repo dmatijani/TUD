@@ -34,9 +34,13 @@ onMounted(async () => {
         <li v-for="document of documentData">
             <ul>
                 <li>Naziv: {{ document.naziv }}</li>
-                <li>Opis: {{ document.opis }}</li>
                 <li>Vrsta: {{ document.vrsta }}</li>
                 <li>Broj verzija: {{ document.broj_verzija }}</li>
+                <li>Prva izmjena: {{ document.prva_izmjena }}</li>
+                <li>Kreirao: {{ document.prvi_izmijenio }}</li>
+                <li v-if="document.broj_verzija > 1">Zadnja izmjena: {{ document.zadnja_izmjena }}</li>
+                <li v-if="document.broj_verzija > 1">Zadnji izmijenio: {{ document.zadnji_izmijenio }}</li>
+                <li v-if="document.ima_finalnu">Ima finalnu verziju</li>
                 <li><RouterLink :to="'/document/' + document.id">Detalji dokumenta</RouterLink></li>
             </ul>
         </li>

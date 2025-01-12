@@ -492,17 +492,33 @@ CREATE OR REPLACE FUNCTION dohvati_popis_mojih_dokumenata(korisnik_id INT)
 RETURNS TABLE (
     id INT,
     naziv VARCHAR(255),
-    opis TEXT,
     vrsta TEXT,
-    broj_verzija INT
+    broj_verzija INT,
+    prva_izmjena TIMESTAMP,
+    prvi_izmijenio TEXT,
+    ima_finalnu BOOL,
+    zadnja_izmjena TIMESTAMP,
+    zadnji_izmijenio TEXT
 )
 AS $$
 SELECT
     d.id,
     d.naziv,
-    d.opis,
     d.vrsta::TEXT,
-    COUNT(v.verzija) AS broj_verzija
+    COUNT(v.verzija) AS broj_verzija,
+    MIN(LOWER(v.vrijedi)::TIMESTAMP) AS prva_izmjena,
+    (SELECT CONCAT(k.ime, ' ', k.prezime)
+        FROM korisnik k
+        WHERE k.id = MIN(v.kreirao_id)) AS prvi_izmijenio,
+    EXISTS(
+        SELECT * FROM verzija_dokumenta v2
+        WHERE v2.dokument_id = d.id
+        AND v2.finalna = TRUE
+    ) AS ima_finalnu,
+    MAX(LOWER(v.vrijedi)::TIMESTAMP) AS zadnja_izmjena,
+    (SELECT CONCAT(k2.ime, ' ', k2.prezime)
+        FROM korisnik k2
+        WHERE k2.id = MAX(v.kreirao_id)) AS zadnji_izmijenio
 FROM dokument d 
 LEFT JOIN verzija_dokumenta v 
 ON d.id = v.dokument_id 
@@ -525,17 +541,33 @@ CREATE OR REPLACE FUNCTION dohvati_popis_dijeljenih_dokumenata(korisnik_id INT)
 RETURNS TABLE (
     id INT,
     naziv VARCHAR(255),
-    opis TEXT,
     vrsta TEXT,
-    broj_verzija INT
+    broj_verzija INT,
+    prva_izmjena TIMESTAMP,
+    prvi_izmijenio TEXT,
+    ima_finalnu BOOL,
+    zadnja_izmjena TIMESTAMP,
+    zadnji_izmijenio TEXT
 )
 AS $$
 SELECT
     d.id,
     d.naziv,
-    d.opis,
     d.vrsta::TEXT,
-    COUNT(v.verzija) AS broj_verzija
+    COUNT(v.verzija) AS broj_verzija,
+    MIN(LOWER(v.vrijedi)::TIMESTAMP) AS prva_izmjena,
+    (SELECT CONCAT(k.ime, ' ', k.prezime)
+        FROM korisnik k
+        WHERE k.id = MIN(v.kreirao_id)) AS prvi_izmijenio,
+    EXISTS(
+        SELECT * FROM verzija_dokumenta v2
+        WHERE v2.dokument_id = d.id
+        AND v2.finalna = TRUE
+    ) AS ima_finalnu,
+    MAX(LOWER(v.vrijedi)::TIMESTAMP) AS zadnja_izmjena,
+    (SELECT CONCAT(k2.ime, ' ', k2.prezime)
+        FROM korisnik k2
+        WHERE k2.id = MAX(v.kreirao_id)) AS zadnji_izmijenio
 FROM dokument d 
 LEFT JOIN verzija_dokumenta v 
 ON d.id = v.dokument_id 
@@ -618,6 +650,7 @@ RETURNS TABLE (
     opis TEXT,
     vrsta vrsta_dokumenta,
     pravo pravo,
+    ima_finalnu BOOL,
     verzije JSON,
     dijeljeno_s_korisnicima JSON,
     dijeljeno_s_grupama JSON
@@ -635,6 +668,11 @@ BEGIN
         d.opis,
         d.vrsta,
         koje_pravo,
+        EXISTS(
+            SELECT * FROM verzija_dokumenta vd
+            WHERE vd.dokument_id = d.id
+            AND vd.finalna = TRUE
+        ) AS ima_finalnu,
         COALESCE(
             (SELECT json_agg(json_build_object(
                 'vrijedi_od', LOWER(v.vrijedi)::TIMESTAMP,

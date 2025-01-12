@@ -10,6 +10,7 @@ import MyDocuments from '../pages/document/MyDocuments.vue';
 import CreateDocument from '../pages/document/CreateDocument.vue';
 import SharedDocuments from '../pages/document/SharedDocuments.vue';
 import DocumentDetails from '../pages/document/DocumentDetails.vue';
+import NewVersion from '../pages/document/NewVersion.vue';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -68,6 +69,11 @@ const router = createRouter({
             path: '/document/:id',
             name: 'detaljiDokumenta',
             component: DocumentDetails
+        },
+        {
+            path: '/documents/newVersion/:id',
+            name: 'novaVerzijaDokumenta',
+            component: NewVersion
         }
     ],
 })

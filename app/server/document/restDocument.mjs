@@ -63,7 +63,7 @@ class RestDocument {
                 let userId = await auth.checkAuth(req);
                 let documentId = req.params.documentId;
 
-                handleNewVersionUpload(this.config, userId, documentId, fields, files);
+                await handleNewVersionUpload(this.config, userId, documentId, fields, files);
                 
                 res.send(JSON.stringify({
                     "success": true,

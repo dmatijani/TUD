@@ -63,9 +63,8 @@ const downloadFile = async (fileId, fileName) => {
     </div>
     <div v-if="documentData != null">
         <h3>Verzije</h3>
-        <div v-if="documentData.pravo == 'vlasnik'">
-            <!-- TODO: dodavanje nove verzije dokumentu (ako je korisnik vlasnik) -->
-            <p>Dodaj novu verziju ???</p>
+        <div v-if="documentData.pravo == 'vlasnik' && !documentData.ima_finalnu">
+            <RouterLink :to="'/documents/newVersion/' + documentId">Dodaj novu verziju dokumenta</RouterLink>
         </div>
         <ul>
             <li v-for="verzija in documentData.verzije"><ul>
