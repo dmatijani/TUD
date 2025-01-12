@@ -95,6 +95,7 @@ function restServices() {
     server.post("/api/document/create", restDocument.postDocument);
     server.get("/api/documents/:role", restDocument.getDocuments);
     server.get("/api/document/:documentId", restDocument.getDocument);
+    server.get("/api/document/download/:fileId", restDocument.getDocumentDownload);
 
     server.get("/api/types", restType.getTypes);
 

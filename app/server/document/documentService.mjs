@@ -66,6 +66,20 @@ class DocumentService {
             await db.close();
         }
     }
+
+    getFileName = async function(userId, fileId) {
+        var db = new DB(this.config.dbConfig);
+        await db.connect();
+        try {
+            let params = [userId, fileId];
+            let files = await db.execute("SELECT * FROM preuzmi_datoteku($1, $2);", params);
+            let file = files[0];
+
+            return file;
+        } catch (error) {
+            await db.close();
+        }
+    }
 }
 
 export default DocumentService;

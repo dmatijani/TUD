@@ -658,6 +658,39 @@ END;
 $$
 LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION preuzmi_datoteku(korisnik_id INT, datoteka_id INT)
+RETURNS TABLE(
+    temp_naziv TEXT,
+    naziv_datoteke TEXT
+)
+AS $$
+DECLARE
+    dokument_id INT;
+    temp_naziv TEXT;
+    naziv_datoteke TEXT;
+BEGIN
+    SELECT vd.dokument_id INTO dokument_id
+    FROM verzija_dokumenta vd
+    WHERE vd.datoteka_id = $2;
+
+    PERFORM provjeri_pravo_korisnika_na_dokument($1, dokument_id);
+
+    SELECT d.naziv INTO naziv_datoteke
+    FROM datoteka d
+    WHERE d.id = $2;
+
+    SELECT '/tmp/' || gen_random_uuid() || '_' || naziv_datoteke INTO temp_naziv;
+
+    PERFORM lo_export(d.datoteka, temp_naziv)
+    FROM datoteka d
+    WHERE d.id = $2;
+
+    RETURN QUERY
+    SELECT temp_naziv, naziv_datoteke;
+END;
+$$
+LANGUAGE plpgsql;
+
 -- Okidači (i funkcije)
 
 CREATE OR REPLACE FUNCTION dodaj_novog_korisnika_u_grupu_korisnika()

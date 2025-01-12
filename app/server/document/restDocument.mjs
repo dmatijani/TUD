@@ -1,6 +1,7 @@
 import formidable from "formidable";
 import DocumentService from "./documentService.mjs";
 import Auth from "../user/auth.mjs";
+import fs from "fs";
 
 class RestDocument {
     constructor(config) {
@@ -95,6 +96,40 @@ class RestDocument {
                             "text": "uspjesno",
                             "document": document
                         }));
+                    })
+                    .catch((error) => {
+                        res.status(400);
+                        res.send(JSON.stringify({
+                            "success": false,
+                            "error": error.message
+                        }));
+                    })
+            })
+            .catch((error) => {
+                res.status(400);
+                res.send(JSON.stringify({
+                    "success": false,
+                    "error": error.message
+                }));
+            })
+    }
+
+    getDocumentDownload = (req, res) => {
+        res.type("application/octet-stream");
+        let auth = new Auth(this.config.jwtConfig);
+
+        auth.checkAuth(req)
+            .then((userId) => {
+                let fileId = req.params.fileId;
+
+                let documentService = new DocumentService(this.config);
+                documentService.getFileName(userId, fileId)
+                    .then(async (file) => {
+                        let tempPath = file.temp_naziv;
+                        let fileName = file.naziv_datoteke;
+                        res.download(tempPath, fileName, (error) => {
+                            // TODO: izbrisati datoteku
+                        });
                     })
                     .catch((error) => {
                         res.status(400);
