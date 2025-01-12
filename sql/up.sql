@@ -717,6 +717,55 @@ END;
 $$
 LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION nova_verzija_dokumenta(
+    korisnik_id INT,
+    dokument_id INT,
+    finalna BOOLEAN,
+    napomena TEXT,
+    putanja TEXT,
+    naziv_datoteke TEXT
+)
+RETURNS VOID
+AS $$
+DECLARE
+    postoji_dokument BOOLEAN;
+    koje_pravo pravo;
+    postoji_finalna_verzija BOOLEAN;
+    nova_datoteka_id INT;
+BEGIN
+    postoji_dokument := EXISTS(
+        SELECT * FROM dokument
+        WHERE id = $2
+    );
+
+    IF NOT postoji_dokument THEN
+        RAISE EXCEPTION '%', 'Dokument s tim ID-om ne postoji!';
+    END IF;
+
+    SELECT provjeri_pravo_korisnika_na_dokument($1, $2) INTO koje_pravo;
+
+    IF koje_pravo != 'vlasnik'::pravo THEN
+        RAISE EXCEPTION '%', 'Korisnik nije vlasnik dokumenta!';
+    END IF;
+
+    postoji_finalna_verzija := EXISTS(
+        SELECT * FROM verzija_dokumenta vd
+        WHERE vd.dokument_id = $2
+        AND vd.finalna = TRUE
+    );
+
+    IF postoji_finalna_verzija THEN
+        RAISE EXCEPTION '%', 'Već postoji finalna verzija dokumenta!';
+    END IF;
+
+    SELECT nova_datoteka($6, $5) INTO nova_datoteka_id;
+
+    INSERT INTO verzija_dokumenta(dokument_id, datoteka_id, finalna, kreirao_id, napomena)
+    VALUES ($2, nova_datoteka_id, $3, $1, $4);
+END;
+$$
+LANGUAGE plpgsql;
+
 -- Okidači (i funkcije)
 
 CREATE OR REPLACE FUNCTION dodaj_novog_korisnika_u_grupu_korisnika()

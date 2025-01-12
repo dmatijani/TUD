@@ -20,6 +20,8 @@ DROP FUNCTION dodaj_novog_korisnika_u_grupu_korisnika();
 
 -- Funkcije
 
+DROP FUNCTION nova_verzija_dokumenta(INT, INT, BOOLEAN, TEXT, TEXT, TEXT);
+
 DROP FUNCTION preuzmi_datoteku(INT, INT);
 
 DROP FUNCTION dohvati_detalje_dokumenta(INT, INT);
