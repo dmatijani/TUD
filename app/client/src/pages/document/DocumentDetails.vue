@@ -79,5 +79,20 @@ const downloadFile = async (fileId, fileName) => {
             </ul></li>
         </ul>
     </div>
+    <div v-if="documentData != null">
+        <h3>Dijeljeno sa</h3>
+        <ul>
+            <li v-for="dijeljenoKorisnici in documentData.dijeljeno_s_korisnicima"><ul>
+                <li>Naziv: <span>{{ dijeljenoKorisnici.naziv }}</span></li>
+                <li>Pravo: <span>{{ dijeljenoKorisnici.pravo }}</span></li>
+            </ul></li>
+        </ul>
+        <ul>
+            <li v-for="dijeljenoGrupa in documentData.dijeljeno_s_grupama"><ul>
+                <li>Naziv: <span>{{ dijeljenoGrupa.naziv }}</span></li>
+                <li>Pravo: <span>{{ dijeljenoGrupa.pravo }}</span></li>
+            </ul></li>
+        </ul>
+    </div>
     <ErrorMessage v-if="errorMessage != null && errorMessage != ''">{{ errorMessage }}</ErrorMessage>
 </template>

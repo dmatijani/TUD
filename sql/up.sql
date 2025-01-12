@@ -618,7 +618,9 @@ RETURNS TABLE (
     opis TEXT,
     vrsta vrsta_dokumenta,
     pravo pravo,
-    verzije JSON
+    verzije JSON,
+    dijeljeno_s_korisnicima JSON,
+    dijeljeno_s_grupama JSON
 )
 AS $$
 DECLARE
@@ -651,7 +653,31 @@ BEGIN
             ON k.id = v.kreirao_id
             WHERE v.dokument_id = d.id),
             '[]'::json
-        ) AS verzije
+        ) AS verzije,
+        COALESCE(
+            (SELECT json_agg(json_build_object(
+                'naziv', CONCAT(k.ime, ' ', k.prezime),
+                'pravo', pk.pravo
+            ))
+            FROM pristup_korisnik pk
+            LEFT JOIN korisnik k
+            ON pk.korisnik_id = k.id
+            WHERE pk.dokument_id = d.id
+            ),
+            '[]'::json
+        ) AS dijeljeno_s_korisnicima,
+        COALESCE(
+            (SELECT json_agg(json_build_object(
+                'naziv', g.naziv,
+                'pravo', pg.pravo
+            ))
+            FROM pristup_grupa pg
+            LEFT JOIN grupa g
+            ON pg.grupa_id = g.id
+            WHERE pg.dokument_id = d.id
+            ),
+            '[]'::json
+        ) AS dijeljeno_s_grupama
     FROM dokument d
     WHERE d.id = $2;
 END;
