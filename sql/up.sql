@@ -490,6 +490,7 @@ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION dohvati_popis_mojih_dokumenata(korisnik_id INT)
 RETURNS TABLE (
+    id INT,
     naziv VARCHAR(255),
     opis TEXT,
     vrsta TEXT,
@@ -497,6 +498,7 @@ RETURNS TABLE (
 )
 AS $$
 SELECT
+    d.id,
     d.naziv,
     d.opis,
     d.vrsta::TEXT,
@@ -521,6 +523,7 @@ LANGUAGE SQL;
 
 CREATE OR REPLACE FUNCTION dohvati_popis_dijeljenih_dokumenata(korisnik_id INT)
 RETURNS TABLE (
+    id INT,
     naziv VARCHAR(255),
     opis TEXT,
     vrsta TEXT,
@@ -528,6 +531,7 @@ RETURNS TABLE (
 )
 AS $$
 SELECT
+    d.id,
     d.naziv,
     d.opis,
     d.vrsta::TEXT,
@@ -545,7 +549,7 @@ WHERE id IN (
         WHERE kug.korisnik_id = $1
     )
 ) AND id NOT IN (
-SELECT pk.dokument_id FROM pristup_korisnik pk
+    SELECT pk.dokument_id FROM pristup_korisnik pk
     WHERE pk.pravo = 'vlasnik'::pravo AND pk.korisnik_id = $1
     UNION
     SELECT pg.dokument_id FROM pristup_grupa pg
@@ -558,6 +562,83 @@ GROUP BY d.id
 ORDER BY d.id;
 $$
 LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION provjeri_pravo_korisnika_na_dokument(korisnik_id INT, dokument_id INT)
+RETURNS pravo
+AS $$
+DECLARE
+    ima_pravo BOOLEAN;
+    je_vlasnik BOOLEAN;
+BEGIN
+    ima_pravo := EXISTS(
+        SELECT * FROM pristup_korisnik pk
+        WHERE pk.korisnik_id = $1 AND pk.dokument_id = $2
+    );
+
+    IF NOT ima_pravo THEN
+        ima_pravo := EXISTS(
+            SELECT * FROM pristup_grupa pg
+            WHERE pg.dokument_id = $2
+            AND pg.grupa_id IN (
+                SELECT grupa_id FROM korisnik_u_grupi kug
+                WHERE kug.korisnik_id = $1
+            )
+        );
+    END IF;
+
+    IF NOT ima_pravo THEN
+        RAISE EXCEPTION '%', 'Nemate pristup ovom dokumentu!';
+    END IF;
+
+    je_vlasnik := EXISTS(
+        SELECT pk.pravo FROM pristup_korisnik pk
+        WHERE pk.korisnik_id = $1 AND pk.dokument_id = $2 AND pk.pravo = 'vlasnik'::pravo
+        UNION
+        SELECT pg.pravo FROM pristup_grupa pg
+        WHERE pg.dokument_id = $2 AND pg.pravo = 'vlasnik'::pravo
+        AND pg.grupa_id IN (
+            SELECT grupa_id FROM korisnik_u_grupi kug
+            WHERE kug.korisnik_id = $1
+        )
+    );
+
+    IF je_vlasnik THEN
+        RETURN 'vlasnik'::pravo;
+    ELSE 
+        RETURN 'čitanje'::pravo;
+    END IF;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION dohvati_detalje_dokumenta(korisnik_id INT, dokument_id INT)
+RETURNS TABLE (
+    id INT,
+    naziv VARCHAR(255),
+    opis TEXT,
+    vrsta vrsta_dokumenta,
+    pravo pravo
+)
+AS $$
+DECLARE
+    koje_pravo pravo;
+BEGIN
+    SELECT provjeri_pravo_korisnika_na_dokument($1, $2) INTO koje_pravo;
+
+    RETURN QUERY
+    SELECT
+        d.id,
+        d.naziv,
+        d.opis,
+        d.vrsta,
+        koje_pravo
+        -- TODO: dodati pravo korisnika
+        -- TODO: dodati verzije dokumenta
+    FROM dokument d
+    WHERE d.id = $2;
+END;
+$$
+LANGUAGE plpgsql;
 
 -- Okidači (i funkcije)
 

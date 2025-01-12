@@ -45,6 +45,27 @@ class DocumentService {
             await db.close();
         }
     }
+
+    getDocumentDetails = async function(userId, documentId) {
+        var db = new DB(this.config.dbConfig);
+        await db.connect();
+        try {
+            let params = [userId, documentId];
+            let documents = await db.execute("SELECT * FROM dohvati_detalje_dokumenta($1, $2);", params);
+            
+            if (documents == undefined || documents.length != 1) {
+                throw new Error("Nemogućnost pronalaženja dokumenta.");
+            }
+
+            let document = documents[0];
+            
+            return document;
+        } catch (error) {
+            throw error;
+        } finally {
+            await db.close();
+        }
+    }
 }
 
 export default DocumentService;

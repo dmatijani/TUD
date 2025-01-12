@@ -1,6 +1,5 @@
 <script setup>
-import { ref } from "vue";
-import { onMounted } from 'vue';
+import { ref, onMounted } from "vue";
 import RestServices from "../../services/rest.mjs";
 import ErrorMessage from "../../components/ErrorMessage.vue";
 
@@ -27,7 +26,7 @@ onMounted(async () => {
     role = props.role;
 
     await loadDocumentData();
-})
+});
 </script>
 
 <template>
@@ -38,6 +37,7 @@ onMounted(async () => {
                 <li>Opis: {{ document.opis }}</li>
                 <li>Vrsta: {{ document.vrsta }}</li>
                 <li>Broj verzija: {{ document.broj_verzija }}</li>
+                <li><RouterLink :to="'/document/' + document.id">Detalji dokumenta</RouterLink></li>
             </ul>
         </li>
     </ul>

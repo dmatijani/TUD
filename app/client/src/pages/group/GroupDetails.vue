@@ -1,8 +1,6 @@
 <script setup>
-import { ref } from "vue";
-import { onMounted } from 'vue';
-import { useRoute } from 'vue-router';
-import { useRouter } from 'vue-router';
+import { ref, onMounted } from "vue";
+import { useRoute, useRouter } from 'vue-router';
 import RestServices from "../../services/rest.mjs";
 import AuthController from "../../services/authController.mjs";
 import SuccessMessage from "../../components/SuccessMessage.vue";

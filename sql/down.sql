@@ -20,6 +20,10 @@ DROP FUNCTION dodaj_novog_korisnika_u_grupu_korisnika();
 
 -- Funkcije
 
+DROP FUNCTION dohvati_detalje_dokumenta(INT, INT);
+
+DROP FUNCTION provjeri_pravo_korisnika_na_dokument(INT, INT);
+
 DROP FUNCTION dohvati_popis_dijeljenih_dokumenata(INT);
 
 DROP FUNCTION dohvati_popis_mojih_dokumenata(INT);
