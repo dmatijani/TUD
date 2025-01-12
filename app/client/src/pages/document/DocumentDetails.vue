@@ -39,6 +39,15 @@ onMounted(async () => {
 
     await loadDocumentData();
 });
+
+const downloadFile = async (fileId, fileName) => {
+    errorMessage.value = "";
+    
+    const response = await rest.downloadFile(`/document/download/${fileId}`, true, fileName);
+    if (!response.success) {
+        errorMessage.value = response.error;
+    }
+}
 </script>
 
 <template>
@@ -65,7 +74,8 @@ onMounted(async () => {
                 <li v-if="verzija.finalna">Finalna verzija</li>
                 <li>Napomena: <span>{{ verzija.napomena }}</span></li>
                 <li>Kreirao: <span>{{ verzija.kreirao }}</span></li>
-                <li>Datoteka: <span>{{ verzija.naziv_datoteke }}</span></li> <!-- TODO: da se može downloadati -->
+                <li>Datoteka: <span>{{ verzija.naziv_datoteke }}</span></li>
+                <li><button v-on:click="downloadFile(verzija.datoteka_id, verzija.naziv_datoteke)">Preuzmi</button></li>
             </ul></li>
         </ul>
     </div>
