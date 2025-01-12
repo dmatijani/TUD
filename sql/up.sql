@@ -617,7 +617,8 @@ RETURNS TABLE (
     naziv VARCHAR(255),
     opis TEXT,
     vrsta vrsta_dokumenta,
-    pravo pravo
+    pravo pravo,
+    verzije JSON
 )
 AS $$
 DECLARE
@@ -631,9 +632,26 @@ BEGIN
         d.naziv,
         d.opis,
         d.vrsta,
-        koje_pravo
-        -- TODO: dodati pravo korisnika
-        -- TODO: dodati verzije dokumenta
+        koje_pravo,
+        COALESCE(
+            (SELECT json_agg(json_build_object(
+                'vrijedi_od', LOWER(v.vrijedi)::TIMESTAMP,
+                'vrijedi_do', UPPER(v.vrijedi)::TIMESTAMP,
+                'verzija', v.verzija,
+                'finalna', v.finalna,
+                'kreirao', CONCAT(k.ime, ' ', k.prezime),
+                'napomena', v.napomena,
+                'datoteka_id', dat.id,
+                'naziv_datoteke', dat.naziv
+            ) ORDER BY v.verzija DESC)
+            FROM verzija_dokumenta v
+            LEFT JOIN datoteka dat
+            ON v.datoteka_id = dat.id
+            LEFT JOIN korisnik k
+            ON k.id = v.kreirao_id
+            WHERE v.dokument_id = d.id),
+            '[]'::json
+        ) AS verzije
     FROM dokument d
     WHERE d.id = $2;
 END;
