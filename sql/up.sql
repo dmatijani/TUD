@@ -509,7 +509,14 @@ SELECT
     MIN(LOWER(v.vrijedi)::TIMESTAMP) AS prva_izmjena,
     (SELECT CONCAT(k.ime, ' ', k.prezime)
         FROM korisnik k
-        WHERE k.id = MIN(v.kreirao_id)) AS prvi_izmijenio,
+        WHERE k.id = (
+            SELECT v1.kreirao_id
+            FROM verzija_dokumenta v1
+            WHERE v1.dokument_id = d.id
+            ORDER BY LOWER(v1.vrijedi) ASC
+            LIMIT 1
+        )
+    ) AS prvi_izmijenio,
     EXISTS(
         SELECT * FROM verzija_dokumenta v2
         WHERE v2.dokument_id = d.id
@@ -518,7 +525,14 @@ SELECT
     MAX(LOWER(v.vrijedi)::TIMESTAMP) AS zadnja_izmjena,
     (SELECT CONCAT(k2.ime, ' ', k2.prezime)
         FROM korisnik k2
-        WHERE k2.id = MAX(v.kreirao_id)) AS zadnji_izmijenio
+        WHERE k2.id = (
+            SELECT v3.kreirao_id
+            FROM verzija_dokumenta v3
+            WHERE v3.dokument_id = d.id
+            ORDER BY LOWER(v3.vrijedi) DESC
+            LIMIT 1
+        )
+    ) AS zadnji_izmijenio
 FROM dokument d 
 LEFT JOIN verzija_dokumenta v 
 ON d.id = v.dokument_id 
@@ -558,7 +572,14 @@ SELECT
     MIN(LOWER(v.vrijedi)::TIMESTAMP) AS prva_izmjena,
     (SELECT CONCAT(k.ime, ' ', k.prezime)
         FROM korisnik k
-        WHERE k.id = MIN(v.kreirao_id)) AS prvi_izmijenio,
+        WHERE k.id = (
+            SELECT v1.kreirao_id
+            FROM verzija_dokumenta v1
+            WHERE v1.dokument_id = d.id
+            ORDER BY LOWER(v1.vrijedi) ASC
+            LIMIT 1
+        )
+    ) AS prvi_izmijenio,
     EXISTS(
         SELECT * FROM verzija_dokumenta v2
         WHERE v2.dokument_id = d.id
@@ -567,7 +588,14 @@ SELECT
     MAX(LOWER(v.vrijedi)::TIMESTAMP) AS zadnja_izmjena,
     (SELECT CONCAT(k2.ime, ' ', k2.prezime)
         FROM korisnik k2
-        WHERE k2.id = MAX(v.kreirao_id)) AS zadnji_izmijenio
+        WHERE k2.id = (
+            SELECT v3.kreirao_id
+            FROM verzija_dokumenta v3
+            WHERE v3.dokument_id = d.id
+            ORDER BY LOWER(v3.vrijedi) DESC
+            LIMIT 1
+        )
+    ) AS zadnji_izmijenio
 FROM dokument d 
 LEFT JOIN verzija_dokumenta v 
 ON d.id = v.dokument_id 
@@ -800,6 +828,191 @@ BEGIN
 
     INSERT INTO verzija_dokumenta(dokument_id, datoteka_id, finalna, kreirao_id, napomena)
     VALUES ($2, nova_datoteka_id, $3, $1, $4);
+END;
+$$
+LANGUAGE plpgsql;
+
+-- Napredno pretraživanje
+
+CREATE OR REPLACE FUNCTION napredno_pretrazivanje(
+    korisnik_id INT,
+    naziv_dio TEXT DEFAULT NULL, -- Ako je NULL, ne primjenjuje se
+    vrsta_upit vrsta_dokumenta DEFAULT NULL,
+    min_broj_verzija INT DEFAULT NULL,
+    max_broj_verzija INT DEFAULT NULL,
+    kreiran_unutar_raspona TSRANGE DEFAULT NULL,
+    zadnja_izmjena_unutar_raspona TSRANGE DEFAULT NULL,
+    ima_finalnu_upit BOOLEAN DEFAULT NULL,
+    prvi_izmijenio_upit INT DEFAULT NULL,
+    dijeljeno_s_korisnicima INT[] DEFAULT NULL,
+    dijeljeno_s_grupama INT[] DEFAULT NULL
+)
+RETURNS TABLE (
+    id INT,
+    naziv VARCHAR(255),
+    vrsta TEXT,
+    broj_verzija INT,
+    prva_izmjena TIMESTAMP,
+    prvi_izmijenio TEXT,
+    ima_finalnu BOOL,
+    zadnja_izmjena TIMESTAMP,
+    zadnji_izmijenio TEXT,
+    pravo pravo
+)
+AS $$
+BEGIN
+    CREATE TEMP TABLE temp_dokumenti AS
+    SELECT
+        d.id,
+        d.naziv,
+        d.vrsta::TEXT,
+        COUNT(v.verzija)::INT AS broj_verzija,
+        MIN(LOWER(v.vrijedi)::TIMESTAMP) AS prva_izmjena,
+        (SELECT CONCAT(k.ime, ' ', k.prezime)
+            FROM korisnik k
+            WHERE k.id = (
+                SELECT v1.kreirao_id
+                FROM verzija_dokumenta v1
+                WHERE v1.dokument_id = d.id
+                ORDER BY LOWER(v1.vrijedi) ASC
+                LIMIT 1
+            )
+        ) AS prvi_izmijenio,
+        EXISTS(
+            SELECT * FROM verzija_dokumenta v2
+            WHERE v2.dokument_id = d.id
+            AND v2.finalna = TRUE
+        ) AS ima_finalnu,
+        MAX(LOWER(v.vrijedi)::TIMESTAMP) AS zadnja_izmjena,
+        (SELECT CONCAT(k2.ime, ' ', k2.prezime)
+            FROM korisnik k2
+            WHERE k2.id = (
+                SELECT v3.kreirao_id
+                FROM verzija_dokumenta v3
+                WHERE v3.dokument_id = d.id
+                ORDER BY LOWER(v3.vrijedi) DESC
+                LIMIT 1
+            )
+        ) AS zadnji_izmijenio,
+        (SELECT * FROM provjeri_pravo_korisnika_na_dokument($1, d.id)) AS pravo
+    FROM dokument d 
+    LEFT JOIN verzija_dokumenta v 
+    ON d.id = v.dokument_id 
+    WHERE d.id IN (
+        SELECT pk.dokument_id FROM pristup_korisnik pk
+        WHERE pk.korisnik_id = $1
+        UNION
+        SELECT pg.dokument_id FROM pristup_grupa pg
+        WHERE pg.grupa_id IN (
+            SELECT kug.grupa_id FROM korisnik_u_grupi kug
+            WHERE kug.korisnik_id = $1
+        )
+    )
+    GROUP BY d.id
+    ORDER BY d.id;
+
+    CREATE TEMP TABLE temp_idovi(
+        id INT
+    );
+
+    IF naziv_dio IS NOT NULL THEN -- Provjera ima li naziv dio
+        DELETE FROM temp_idovi;
+
+        INSERT INTO temp_idovi (id)
+        SELECT td.id
+        FROM temp_dokumenti td
+        WHERE td.naziv LIKE '%' || naziv_dio || '%';
+
+        DELETE FROM temp_dokumenti td
+        WHERE td.id NOT IN (SELECT ti.id FROM temp_idovi ti);
+    END IF;
+
+    IF vrsta_upit IS NOT NULL THEN -- Provjera je li dokument određene vrste
+        DELETE FROM temp_dokumenti td
+        WHERE td.vrsta::TEXT != vrsta_upit::TEXT;
+    END IF;
+
+    IF min_broj_verzija IS NOT NULL THEN -- Provjera minimalnog broja verzija dokumenta
+        DELETE FROM temp_dokumenti td
+        WHERE td.broj_verzija < min_broj_verzija;
+    END IF;
+
+    IF max_broj_verzija IS NOT NULL THEN -- Provjera najvećeg broja verzija dokumenta
+        DELETE FROM temp_dokumenti td
+        WHERE td.broj_verzija > max_broj_verzija;
+    END IF;
+
+    IF kreiran_unutar_raspona IS NOT NULL THEN -- Provjera je li dokument kreiran unutar određenog raspona
+        DELETE FROM temp_idovi;
+
+        INSERT INTO temp_idovi (id)
+        SELECT td.id
+        FROM temp_dokumenti td
+        WHERE kreiran_unutar_raspona @> td.prva_izmjena;
+
+        DELETE FROM temp_dokumenti td
+        WHERE td.id NOT IN (SELECT ti.id FROM temp_idovi ti);
+    END IF;
+
+    IF zadnja_izmjena_unutar_raspona IS NOT NULL THEN -- Provjera je li zadnja izmjena dokumenta unutar određenog raspona
+        DELETE FROM temp_idovi;
+
+        INSERT INTO temp_idovi (id)
+        SELECT td.id
+        FROM temp_dokumenti td
+        WHERE zadnja_izmjena_unutar_raspona @> td.zadnja_izmjena;
+
+        DELETE FROM temp_dokumenti td
+        WHERE td.id NOT IN (SELECT ti.id FROM temp_idovi ti);
+    END IF;
+
+    IF ima_finalnu_upit IS NOT NULL THEN -- Provjera ima li dokument finalnu verziju
+        DELETE FROM temp_dokumenti td
+        WHERE td.ima_finalnu != ima_finalnu_upit;
+    END IF;
+
+    IF prvi_izmijenio_upit IS NOT NULL THEN -- Provjera je li taj korisnik prvi izmijenio upit
+        DELETE FROM temp_idovi;
+
+        INSERT INTO temp_idovi (id)
+        SELECT vd.dokument_id AS id
+        FROM verzija_dokumenta vd
+        WHERE vd.verzija = 1
+        AND vd.kreirao_id = prvi_izmijenio_upit;
+
+        DELETE FROM temp_dokumenti td
+        WHERE td.id NOT IN (SELECT ti.id FROM temp_idovi ti);
+    END IF;
+
+    IF dijeljeno_s_korisnicima IS NOT NULL THEN -- Provjera je li dokument dijeljen s popisanim korisnicima
+        DELETE FROM temp_idovi;
+
+        INSERT INTO temp_idovi (id)
+        SELECT pk.dokument_id AS id
+        FROM pristup_korisnik pk
+        WHERE pk.korisnik_id = ANY(dijeljeno_s_korisnicima);
+
+        DELETE FROM temp_dokumenti td
+        WHERE td.id NOT IN (SELECT ti.id FROM temp_idovi ti);
+    END IF;
+
+    IF dijeljeno_s_grupama IS NOT NULL THEN -- Provjera je li dokument dijeljen s popisanim grupama
+        DELETE FROM temp_idovi;
+
+        INSERT INTO temp_idovi (id)
+        SELECT pg.dokument_id AS id
+        FROM pristup_grupa pg
+        WHERE pg.grupa_id = ANY(dijeljeno_s_grupama);
+
+        DELETE FROM temp_dokumenti td
+        WHERE td.id NOT IN (SELECT ti.id FROM temp_idovi ti);
+    END IF;
+
+    RETURN QUERY
+    SELECT * FROM temp_dokumenti td;
+
+    DROP TABLE temp_idovi;
+    DROP TABLE temp_dokumenti;
 END;
 $$
 LANGUAGE plpgsql;
