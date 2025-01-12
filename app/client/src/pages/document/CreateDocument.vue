@@ -69,7 +69,7 @@ const loadRoles = async() => {
     }
 }
 
-const loadGroupsAndUsersForUser = async() => {
+const loadGroupsAndUsersForUser = async () => {
     const getGroupsAndRolesResponse = await rest.sendRequest("GET", "/group/groupsAndUsersForUser", undefined, true);
 
     if (getGroupsAndRolesResponse.success) {

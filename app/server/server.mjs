@@ -85,12 +85,14 @@ function restServices() {
     server.get("/api/user/logout", restUser.getUserLogout);
     server.get("/api/user/profile", restUser.getUserProfile);
     server.get("/api/users/notInGroup/:groupId", restUser.getUsersNotInGroup);
+    server.get("/api/users/all", restUser.getAllUsers);
 
     server.get("/api/group/groupsAndUsersForUser", restGroup.getGroupsAndUsersForUser);
     server.get("/api/group/:groupId", restGroup.getGroupDetails);
     server.post("/api/group/create", restGroup.postGroup);
     server.put("/api/group/addMember", restGroup.putGroupMember);
     server.delete("/api/group/removeMember", restGroup.deleteGroupMember);
+    server.get("/api/groups/all", restGroup.getAllGroups);
 
     server.post("/api/document/create", restDocument.postDocument);
     server.post("/api/document/version/:documentId", restDocument.postDocumentVersion);

@@ -11,6 +11,7 @@ import CreateDocument from '../pages/document/CreateDocument.vue';
 import SharedDocuments from '../pages/document/SharedDocuments.vue';
 import DocumentDetails from '../pages/document/DocumentDetails.vue';
 import NewVersion from '../pages/document/NewVersion.vue';
+import AdvancedSearch from '../pages/document/AdvancedSearch.vue';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -74,6 +75,11 @@ const router = createRouter({
             path: '/documents/newVersion/:id',
             name: 'novaVerzijaDokumenta',
             component: NewVersion
+        },
+        {
+            path: '/documents/advancedSearch',
+            name: 'naprednoPretrazivanje',
+            component: AdvancedSearch
         }
     ],
 })

@@ -181,6 +181,39 @@ class RestUser {
                 }));
             })
     }
+
+    getAllUsers = (req, res) => {
+        res.type("application/json");
+        let auth = new Auth(this.config.jwtConfig);
+
+        auth.checkAuth(req)
+            .then((id) => {
+                let userService = new UserService(this.config);
+                userService.getAllUsers()
+                    .then(async (users) => {
+                        res.status(200);
+                        res.send(JSON.stringify({
+                            "success": true,
+                            "text": "uspjesno",
+                            "users": users
+                        }));
+                    })
+                    .catch((error) => {
+                        res.status(400);
+                        res.send(JSON.stringify({
+                            "success": false,
+                            "error": error.message
+                        }));
+                    })
+            })
+            .catch((error) => {
+                res.status(400);
+                res.send(JSON.stringify({
+                    "success": false,
+                    "error": error.message
+                }));
+            })
+    }
 }
 
 export default RestUser;

@@ -105,6 +105,19 @@ class GroupService {
             await db.close();
         }
     }
+
+    getAllGroups = async function(userId) {
+        var db = new DB(this.config.dbConfig);
+        await db.connect();
+        let params = [userId];
+        try {
+            return await db.execute("SELECT g.id, g.naziv FROM grupa g WHERE g.id IN (SELECT kug.grupa_id FROM korisnik_u_grupi kug WHERE kug.korisnik_id = $1);", params);
+        } catch (error) {
+            throw error;
+        } finally {
+            await db.close();
+        }
+    }
 }
 
 export default GroupService;

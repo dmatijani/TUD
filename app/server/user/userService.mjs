@@ -133,6 +133,18 @@ class UserService {
 
         return foundUsers;
     }
+
+    getAllUsers = async function() {
+        var db = new DB(this.config.dbConfig);
+        await db.connect();
+        try {
+            return await db.execute("SELECT k.id, CONCAT(k.ime, ' ', k.prezime) FROM korisnik k;");
+        } catch (error) {
+            throw error;
+        } finally {
+            await db.close();
+        }
+    }
 }
 
 export default UserService;
