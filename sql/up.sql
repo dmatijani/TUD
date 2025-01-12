@@ -488,7 +488,7 @@ END;
 $$
 LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION dohvati_popis_dokumenata(korisnik_id INT, pravo TEXT)
+CREATE OR REPLACE FUNCTION dohvati_popis_mojih_dokumenata(korisnik_id INT)
 RETURNS TABLE (
     naziv VARCHAR(255),
     opis TEXT,
@@ -506,10 +506,50 @@ LEFT JOIN verzija_dokumenta v
 ON d.id = v.dokument_id 
 WHERE id IN (
     SELECT pk.dokument_id FROM pristup_korisnik pk
-    WHERE pk.pravo = ($2)::pravo AND pk.korisnik_id = $1
+    WHERE pk.pravo = 'vlasnik'::pravo AND pk.korisnik_id = $1
     UNION
     SELECT pg.dokument_id FROM pristup_grupa pg
-    WHERE pg.pravo = ($2)::pravo AND pg.grupa_id IN (
+    WHERE pg.pravo = 'vlasnik'::pravo AND pg.grupa_id IN (
+        SELECT kug.grupa_id FROM korisnik_u_grupi kug
+        WHERE kug.korisnik_id = $1
+    )
+)
+GROUP BY d.id
+ORDER BY d.id;
+$$
+LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION dohvati_popis_dijeljenih_dokumenata(korisnik_id INT)
+RETURNS TABLE (
+    naziv VARCHAR(255),
+    opis TEXT,
+    vrsta TEXT,
+    broj_verzija INT
+)
+AS $$
+SELECT
+    d.naziv,
+    d.opis,
+    d.vrsta::TEXT,
+    COUNT(v.verzija) AS broj_verzija
+FROM dokument d 
+LEFT JOIN verzija_dokumenta v 
+ON d.id = v.dokument_id 
+WHERE id IN (
+    SELECT pk.dokument_id FROM pristup_korisnik pk
+    WHERE pk.pravo = 'čitanje'::pravo AND pk.korisnik_id = $1
+    UNION
+    SELECT pg.dokument_id FROM pristup_grupa pg
+    WHERE pg.pravo = 'čitanje'::pravo AND pg.grupa_id IN (
+        SELECT kug.grupa_id FROM korisnik_u_grupi kug
+        WHERE kug.korisnik_id = $1
+    )
+) AND id NOT IN (
+SELECT pk.dokument_id FROM pristup_korisnik pk
+    WHERE pk.pravo = 'vlasnik'::pravo AND pk.korisnik_id = $1
+    UNION
+    SELECT pg.dokument_id FROM pristup_grupa pg
+    WHERE pg.pravo = 'vlasnik'::pravo AND pg.grupa_id IN (
         SELECT kug.grupa_id FROM korisnik_u_grupi kug
         WHERE kug.korisnik_id = $1
     )

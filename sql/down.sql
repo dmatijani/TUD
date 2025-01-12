@@ -20,7 +20,9 @@ DROP FUNCTION dodaj_novog_korisnika_u_grupu_korisnika();
 
 -- Funkcije
 
-DROP FUNCTION dohvati_popis_dokumenata(INT, TEXT);
+DROP FUNCTION dohvati_popis_dijeljenih_dokumenata(INT);
+
+DROP FUNCTION dohvati_popis_mojih_dokumenata(INT);
 
 DROP FUNCTION prva_verzija_dokumenta(INT, TEXT, TEXT, vrsta_dokumenta, BOOLEAN, TEXT, JSON, JSON, TEXT, TEXT);
 

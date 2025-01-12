@@ -42,6 +42,41 @@ class RestDocument {
             }
         });
     }
+
+    getDocuments = (req, res) => {
+        res.type("application/json");
+        let auth = new Auth(this.config.jwtConfig);
+
+        auth.checkAuth(req)
+            .then((userId) => {
+                let role = req.params.role;
+
+                let documentService = new DocumentService(this.config);
+                documentService.getDocumentList(userId, role)
+                    .then(async (documents) => {
+                        res.status(200);
+                        res.send(JSON.stringify({
+                            "success": true,
+                            "text": "uspjesno",
+                            "documents": documents
+                        }));
+                    })
+                    .catch((error) => {
+                        res.status(400);
+                        res.send(JSON.stringify({
+                            "success": false,
+                            "error": error.message
+                        }));
+                    })
+            })
+            .catch((error) => {
+                res.status(400);
+                res.send(JSON.stringify({
+                    "success": false,
+                    "error": error.message
+                }));
+            })
+    }
 }
 
 async function handleFileUpload(config, userId, fields, files) {

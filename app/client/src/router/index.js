@@ -8,6 +8,7 @@ import CreateGroup from '../pages/group/CreateGroup.vue';
 import DocumentHome from '../pages/document/DocumentHome.vue';
 import MyDocuments from '../pages/document/MyDocuments.vue';
 import CreateDocument from '../pages/document/CreateDocument.vue';
+import SharedDocuments from '../pages/document/SharedDocuments.vue';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -51,6 +52,11 @@ const router = createRouter({
             path: '/documents/myDocuments',
             name: 'mojiDokumenti',
             component: MyDocuments
+        },
+        {
+            path: '/documents/sharedDocuments',
+            name: 'dokumentiDijeljeniSaMnom',
+            component: SharedDocuments
         },
         {
             path: '/documents/create',

@@ -93,6 +93,7 @@ function restServices() {
     server.delete("/api/group/removeMember", restGroup.deleteGroupMember);
 
     server.post("/api/document/create", restDocument.postDocument);
+    server.get("/api/documents/:role", restDocument.getDocuments);
 
     server.get("/api/types", restType.getTypes);
 

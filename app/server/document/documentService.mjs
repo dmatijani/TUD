@@ -26,6 +26,25 @@ class DocumentService {
             }
         }
     }
+
+    getDocumentList = async function(userId, role) {
+        if (role != 'vlasnik' && role != 'čitanje') {
+            throw new Error("Uloga mora biti 'vlasnik' ili 'čitanje'!");
+        }
+
+        var db = new DB(this.config.dbConfig);
+        await db.connect();
+        try {
+            let params = [userId];
+            let functionName = role == 'vlasnik' ? 'dohvati_popis_mojih_dokumenata' : 'dohvati_popis_dijeljenih_dokumenata';
+            let documents = await db.execute(`SELECT * FROM ${functionName}($1);`, params);
+            return documents;
+        } catch (error) {
+            throw error;
+        } finally {
+            await db.close();
+        }
+    }
 }
 
 export default DocumentService;
