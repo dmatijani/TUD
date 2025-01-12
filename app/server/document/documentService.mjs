@@ -21,9 +21,7 @@ class DocumentService {
         } finally {
             await db.close();
 
-            if (fs.existsSync(filepath)) {
-                fs.unlink(filepath, () => {});
-            }
+            await this.freeFile(filepath);
         }
     }
 
@@ -79,6 +77,16 @@ class DocumentService {
         } catch (error) {
             await db.close();
         }
+    }
+
+    freeFile = async function(filePath) {
+        setTimeout(() => {
+            try {
+                if (fs.existsSync(filePath)) {
+                    fs.unlink(filePath, () => {});
+                }
+            } catch (error) { }
+        }, 1000);
     }
 }
 

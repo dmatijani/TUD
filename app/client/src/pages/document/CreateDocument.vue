@@ -197,7 +197,7 @@ const submitForm = async () => {
     </form>
     <SuccessMessage v-if="successMessage != null && successMessage != ''">
         <span>{{ successMessage }}</span>
-        <RouterLink :to="'/documents/myDocuments/' + newDocumentId">Odi na prijavu</RouterLink> <!-- TODO: odi na novokreirani dokument -->
+        <RouterLink :to="'/document/' + newDocumentId">Odi na novokreirani dokument</RouterLink>
     </SuccessMessage>
     <ErrorMessage v-if="errorMessage != null && errorMessage != ''">{{ errorMessage }}</ErrorMessage>
 </template>

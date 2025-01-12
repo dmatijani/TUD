@@ -127,8 +127,8 @@ class RestDocument {
                     .then(async (file) => {
                         let tempPath = file.temp_naziv;
                         let fileName = file.naziv_datoteke;
-                        res.download(tempPath, fileName, (error) => {
-                            // TODO: izbrisati datoteku
+                        res.download(tempPath, fileName, async () => {
+                            await documentService.freeFile(tempPath);
                         });
                     })
                     .catch((error) => {
