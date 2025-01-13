@@ -28,6 +28,22 @@ const created = ref(null);
 const sharedWithGroups = ref([]);
 const sharedWithUsers = ref([]);
 
+const addNewGroup = () => {
+    sharedWithGroups.value.push(null);
+}
+
+const removeGroup = (index) => {
+    sharedWithGroups.value.splice(index, 1);
+}
+
+const addNewUser = () => {
+    sharedWithUsers.value.push(null);
+}
+
+const removeUser = (index) => {
+    sharedWithUsers.value.splice(index, 1);
+}
+
 const clearResults = () => {
     namePart.value = null;
     documentType.value = null;
@@ -144,10 +160,26 @@ const submitForm = async () => {
             <select name="created" id="created" v-model="created">
                 <option v-for="user in users" :value="user.id">{{ user.naziv }}</option>
             </select>
-            <!-- const sharedWithGroups = ref([]); -->
-            <!-- const sharedWithUsers = ref([]); -->
-            <input type="button" value="Očisti filtere" v-on:click="clearResults"> <!-- TODO -->
             <hr />
+            <div v-for="(groupValue, groupIndex) in sharedWithGroups">
+                <select v-model="sharedWithGroups[groupIndex]">
+                    <option :value="group.id" v-for="group in groups
+                        .filter((g) => !sharedWithGroups.includes(g.id) || g.id == groupValue)">{{ group.naziv }}</option>
+                </select>
+                <input type="button" v-on:click="removeGroup(groupIndex)" value="-">
+            </div>
+            <input type="button" v-if="sharedWithGroups.length < groups.length" v-on:click="addNewGroup" value="+">
+            <hr />
+            <div v-for="(userValue, userIndex) in sharedWithUsers">
+                <select v-model="sharedWithUsers[userIndex]">
+                    <option :value="user.id" v-for="user in users
+                        .filter((u) => !sharedWithUsers.includes(u.id) || u.id == userValue)">{{ user.naziv }}</option>
+                </select>
+                <input type="button" v-on:click="removeUser(userIndex)" value="-">
+            </div>
+            <input type="button" v-if="sharedWithUsers.length < users.length" v-on:click="addNewUser" value="+">
+            <hr />
+            <input type="button" value="Očisti filtere" v-on:click="clearResults">
             <input type="button" value="Očisti rezultate"> <!-- TODO -->
             <button type="submit">Pretraži</button>
         </fieldset>
