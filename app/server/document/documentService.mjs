@@ -110,8 +110,8 @@ class DocumentService {
                 body.maxLastModifiedDate,
                 body.hasFinal,
                 body.created,
-                (body.sharedWithGroups.length == 0) ? null : body.sharedWithGroups,
-                (body.sharedWithUsers.length == 0) ? null : body.sharedWithUsers
+                (body.sharedWithUsers.length == 0) ? null : body.sharedWithUsers,
+                (body.sharedWithGroups.length == 0) ? null : body.sharedWithGroups
             ];
             let documents = await db.execute("SELECT * FROM napredno_pretrazivanje($1, $2, $3, $4, $5, tsrange(COALESCE($6::TIMESTAMP, '-infinity'::TIMESTAMP), COALESCE($7::TIMESTAMP, 'infinity'::TIMESTAMP)), tsrange(COALESCE($8::TIMESTAMP, '-infinity'::TIMESTAMP), COALESCE($9::TIMESTAMP, 'infinity'::TIMESTAMP)), $10, $11, $12, $13);", params);
             return documents;
