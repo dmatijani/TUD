@@ -8,12 +8,19 @@ const rest = new RestServices();
 const errorMessage = ref("");
 const documentData = ref(null);
 
-const props = defineProps(["role"]);
+const props = defineProps(["path", "method", "loadOnMounted"]);
 
-var role = "";
+var path = "";
+var method = "GET";
 
-const loadDocumentData = async () => {
-    const response = await rest.sendRequest("GET", `/documents/${role}`, null, true);
+const clear = () => {
+    errorMessage.value = "";
+    documentData.value = null;
+}
+
+const loadDocumentData = async (params = null) => {
+    clear();
+    const response = await rest.sendRequest(method, `/documents/${path}`, params, true);
 
     if (response.success) {
         documentData.value = response.documents;
@@ -22,10 +29,20 @@ const loadDocumentData = async () => {
     }
 }
 
-onMounted(async () => {
-    role = props.role;
+defineExpose({
+    clear,
+    loadDocumentData
+});
 
-    await loadDocumentData();
+onMounted(async () => {
+    path = props.path;
+    if (props.method != undefined && props.method != null) {
+        method = props.method;
+    }
+
+    if (props.loadOnMounted == undefined || props.loadOnMounted == null || props.loadOnMounted == true) {
+        await loadDocumentData();
+    }
 });
 </script>
 

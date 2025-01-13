@@ -99,7 +99,7 @@ function restServices() {
     server.get("/api/documents/:role", restDocument.getDocuments);
     server.get("/api/document/:documentId", restDocument.getDocument);
     server.get("/api/document/download/:fileId", restDocument.getDocumentDownload);
-    server.post("/api/document/advancedSearch", restDocument.postAdvancedSearch);
+    server.post("/api/documents/advancedSearch", restDocument.postAdvancedSearch);
 
     server.get("/api/types", restType.getTypes);
 

@@ -17,5 +17,5 @@ onMounted(async () => {
 
 <template>
     <h2>Dokumenti dijeljeni sa mnom</h2>
-    <DocumentList role="čitanje" />
+    <DocumentList path="čitanje" />
 </template>

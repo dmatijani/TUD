@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router';
 import AuthController from "../../services/authController.mjs";
 import RestServices from "../../services/rest.mjs";
 import ErrorMessage from "../../components/ErrorMessage.vue";
+import DocumentList from "../document/DocumentList.vue";
 
 const authController = new AuthController();
 const rest = new RestServices();
@@ -14,6 +15,8 @@ const errorMessage = ref("");
 const docTypes = ref([]);
 const groups = ref([]);
 const users = ref([]);
+
+const documentListComponent = ref(null);
 
 const namePart = ref(null);
 const documentType = ref(null);
@@ -44,7 +47,7 @@ const removeUser = (index) => {
     sharedWithUsers.value.splice(index, 1);
 }
 
-const clearResults = () => {
+const clearFilters = () => {
     namePart.value = null;
     documentType.value = null;
     minNumberOfVersions.value = null;
@@ -57,6 +60,10 @@ const clearResults = () => {
     created.value = null;
     sharedWithGroups.value = [];
     sharedWithUsers.value = [];
+}
+
+const clearResults = () => {
+    documentListComponent.value.clear();
 }
 
 const loadTypes = async() => {
@@ -95,9 +102,7 @@ onMounted(async () => {
 });
 
 const submitForm = async () => {
-    errorMessage.value = "";
-
-    const response = await rest.sendRequest("POST", "/document/advancedSearch", {
+    let params = {
         namePart: namePart.value,
         documentType: documentType.value,
         minNumberOfVersions: minNumberOfVersions.value,
@@ -110,14 +115,9 @@ const submitForm = async () => {
         created: created.value,
         sharedWithGroups: sharedWithGroups.value,
         sharedWithUsers: sharedWithUsers.value
-    }, true);
+    };
 
-    if (response.success) {
-        console.log(response);
-        // TODO: prebaciti ovo nekako u DocumentList
-    } else {
-        errorMessage.value = response.error;
-    }
+    documentListComponent.value.loadDocumentData(params);
 };
 </script>
 
@@ -193,11 +193,12 @@ const submitForm = async () => {
             </div>
             <input type="button" v-if="sharedWithUsers.length < users.length" v-on:click="addNewUser" value="+">
             <hr />
-            <input type="button" value="Očisti filtere" v-on:click="clearResults">
-            <input type="button" value="Očisti rezultate"> <!-- TODO -->
+            <input type="button" value="Očisti filtere" v-on:click="clearFilters">
+            <input type="button" value="Očisti rezultate" v-on:click="clearResults">
             <button type="submit">Pretraži</button>
         </fieldset>
     </form>
     <ErrorMessage v-if="errorMessage != null && errorMessage != ''">{{ errorMessage }}</ErrorMessage>
-    <!-- TODO: lista pronađenih dokumenata -->
+    <h3>Rezultati</h3>
+    <DocumentList method="POST" path="advancedSearch" ref="documentListComponent" loadOnMounted="false" />
 </template>

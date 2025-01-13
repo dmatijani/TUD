@@ -34,7 +34,7 @@ const loadUsers = async() => {
 
 defineExpose({
     loadUsers
-})
+});
 
 onMounted(async () => {
     groupId = props.groupId;

@@ -18,5 +18,5 @@ onMounted(async () => {
 <template>
     <h2>Moji dokumenti</h2>
     <RouterLink to="/documents/create">Stvori novi dokument</RouterLink>
-    <DocumentList role="vlasnik" />
+    <DocumentList path="vlasnik" />
 </template>
