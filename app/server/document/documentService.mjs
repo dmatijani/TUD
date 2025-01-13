@@ -94,6 +94,34 @@ class DocumentService {
         }
     }
 
+    advancedSearch = async function(userId, body) {
+        var db = new DB(this.config.dbConfig);
+        await db.connect();
+        try {
+            let params = [
+                userId,
+                body.namePart,
+                body.documentType,
+                body.minNumberOfVersions,
+                body.maxNumberOfVersions,
+                body.minCreatedDate,
+                body.maxCreatedDate,
+                body.minLastModifiedDate,
+                body.maxLastModifiedDate,
+                body.hasFinal,
+                body.created,
+                (body.sharedWithGroups.length == 0) ? null : body.sharedWithGroups,
+                (body.sharedWithUsers.length == 0) ? null : body.sharedWithUsers
+            ];
+            let documents = await db.execute("SELECT * FROM napredno_pretrazivanje($1, $2, $3, $4, $5, tsrange(COALESCE($6::TIMESTAMP, '-infinity'::TIMESTAMP), COALESCE($7::TIMESTAMP, 'infinity'::TIMESTAMP)), tsrange(COALESCE($8::TIMESTAMP, '-infinity'::TIMESTAMP), COALESCE($9::TIMESTAMP, 'infinity'::TIMESTAMP)), $10, $11, $12, $13);", params);
+            return documents;
+        } catch (error) {
+            throw error;
+        } finally {
+            await db.close();
+        }
+    }
+
     freeFile = async function(filePath) {
         setTimeout(() => {
             try {

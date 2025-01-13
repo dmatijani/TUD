@@ -95,17 +95,29 @@ onMounted(async () => {
 });
 
 const submitForm = async () => {
-    successMessage.value = "";
     errorMessage.value = "";
 
-    // const response = await rest.sendRequest("POST", "/document/create", formData, true, "multipart/form-data");
+    const response = await rest.sendRequest("POST", "/document/advancedSearch", {
+        namePart: namePart.value,
+        documentType: documentType.value,
+        minNumberOfVersions: minNumberOfVersions.value,
+        maxNumberOfVersions: maxNumberOfVersions.value,
+        minCreatedDate: minCreatedDate.value,
+        maxCreatedDate: maxCreatedDate.value,
+        minLastModifiedDate: minLastModifiedDate.value,
+        maxLastModifiedDate: maxLastModifiedDate.value,
+        hasFinal: hasFinal.value,
+        created: created.value,
+        sharedWithGroups: sharedWithGroups.value,
+        sharedWithUsers: sharedWithUsers.value
+    }, true);
 
-    // if (response.success) {
-    //     newDocumentId.value = response.newDocumentId;
-    //     successMessage.value = response.text;
-    // } else {
-    //     errorMessage.value = response.error;
-    // }
+    if (response.success) {
+        console.log(response);
+        // TODO: prebaciti ovo nekako u DocumentList
+    } else {
+        errorMessage.value = response.error;
+    }
 };
 </script>
 
@@ -161,6 +173,7 @@ const submitForm = async () => {
                 <option v-for="user in users" :value="user.id">{{ user.naziv }}</option>
             </select>
             <hr />
+            <h3>Dijeljeno s grupama</h3>
             <div v-for="(groupValue, groupIndex) in sharedWithGroups">
                 <select v-model="sharedWithGroups[groupIndex]">
                     <option :value="group.id" v-for="group in groups
@@ -170,6 +183,7 @@ const submitForm = async () => {
             </div>
             <input type="button" v-if="sharedWithGroups.length < groups.length" v-on:click="addNewGroup" value="+">
             <hr />
+            <h3>Dijeljeno s korisnicima</h3>
             <div v-for="(userValue, userIndex) in sharedWithUsers">
                 <select v-model="sharedWithUsers[userIndex]">
                     <option :value="user.id" v-for="user in users
@@ -185,5 +199,5 @@ const submitForm = async () => {
         </fieldset>
     </form>
     <ErrorMessage v-if="errorMessage != null && errorMessage != ''">{{ errorMessage }}</ErrorMessage>
-    <h2></h2>
+    <!-- TODO: lista pronađenih dokumenata -->
 </template>

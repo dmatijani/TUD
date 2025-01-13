@@ -183,6 +183,41 @@ class RestDocument {
                 }));
             })
     }
+
+    postAdvancedSearch = (req, res) => {
+        res.type("application/json");
+        let auth = new Auth(this.config.jwtConfig);
+
+        auth.checkAuth(req)
+            .then((userId) => {
+                let body = req.body;
+
+                let documentService = new DocumentService(this.config);
+                documentService.advancedSearch(userId, body)
+                    .then(async (documents) => {
+                        res.status(200);
+                        res.send(JSON.stringify({
+                            "success": true,
+                            "text": "uspjesno",
+                            "documents": documents
+                        }));
+                    })
+                    .catch((error) => {
+                        res.status(400);
+                        res.send(JSON.stringify({
+                            "success": false,
+                            "error": error.message
+                        }));
+                    })
+            })
+            .catch((error) => {
+                res.status(400);
+                res.send(JSON.stringify({
+                    "success": false,
+                    "error": error.message
+                }));
+            })
+    }
 }
 
 async function handleDocumentUpload(config, userId, fields, files) {
