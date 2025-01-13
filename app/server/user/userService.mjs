@@ -138,7 +138,7 @@ class UserService {
         var db = new DB(this.config.dbConfig);
         await db.connect();
         try {
-            return await db.execute("SELECT k.id, CONCAT(k.ime, ' ', k.prezime) FROM korisnik k;");
+            return await db.execute("SELECT k.id, CONCAT(k.ime, ' ', k.prezime) AS naziv FROM korisnik k;");
         } catch (error) {
             throw error;
         } finally {

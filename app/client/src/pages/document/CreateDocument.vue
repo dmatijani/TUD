@@ -55,7 +55,6 @@ const loadTypes = async() => {
     const getTypesResponse = await rest.sendRequest("GET", "/types");
 
     if (getTypesResponse.success) {
-        console.log(getTypesResponse);
         docTypes.value = getTypesResponse.types;
     }
 }
@@ -64,7 +63,6 @@ const loadRoles = async() => {
     const getRolesResponse = await rest.sendRequest("GET", "/roles");
 
     if (getRolesResponse.success) {
-        console.log(getRolesResponse);
         roles.value = getRolesResponse.roles;
     }
 }
