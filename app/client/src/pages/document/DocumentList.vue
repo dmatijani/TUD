@@ -5,6 +5,7 @@ import ErrorMessage from "../../components/ErrorMessage.vue";
 
 const rest = new RestServices();
 
+const loading = ref(false);
 const errorMessage = ref("");
 const documentData = ref(null);
 
@@ -20,7 +21,9 @@ const clear = () => {
 
 const loadDocumentData = async (params = null) => {
     clear();
+    loading.value = true;
     const response = await rest.sendRequest(method, `/documents/${path}`, params, true);
+    loading.value = false;
 
     if (response.success) {
         documentData.value = response.documents;
@@ -47,6 +50,7 @@ onMounted(async () => {
 </script>
 
 <template>
+    <p v-if="loading">Učitavam...</p>
     <ul>
         <li v-for="document of documentData">
             <ul>
