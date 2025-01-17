@@ -1,7 +1,10 @@
 <script setup>
 import { ref, onMounted } from "vue";
+import { useRouter } from 'vue-router';
 import RestServices from "../../services/rest.mjs";
 import ErrorMessage from "../../components/ErrorMessage.vue";
+
+const router = useRouter();
 
 const rest = new RestServices();
 
@@ -13,6 +16,10 @@ const props = defineProps(["path", "method", "loadOnMounted"]);
 
 var path = "";
 var method = "GET";
+
+const navigate = (path) => {
+    router.push(path);
+}
 
 const clear = () => {
     errorMessage.value = "";
@@ -51,20 +58,40 @@ onMounted(async () => {
 
 <template>
     <p v-if="loading">Učitavam...</p>
-    <ul>
-        <li v-for="document of documentData">
-            <ul>
-                <li>Naziv: {{ document.naziv }}</li>
-                <li>Vrsta: {{ document.vrsta }}</li>
-                <li>Broj verzija: {{ document.broj_verzija }}</li>
-                <li>Prva izmjena: {{ document.prva_izmjena }}</li>
-                <li>Kreirao: {{ document.prvi_izmijenio }}</li>
-                <li v-if="document.broj_verzija > 1">Zadnja izmjena: {{ document.zadnja_izmjena }}</li>
-                <li v-if="document.broj_verzija > 1">Zadnji izmijenio: {{ document.zadnji_izmijenio }}</li>
-                <li v-if="document.ima_finalnu">Ima finalnu verziju</li>
-                <li><RouterLink :to="'/document/' + document.id">Detalji dokumenta</RouterLink></li>
-            </ul>
-        </li>
-    </ul>
+    <div class="documentHolder" v-for="document of documentData" v-on:click="navigate('/document/' + document.id)">
+        <ul>
+            <li><h4>{{ document.naziv }}</h4></li>
+            <li>Vrsta: {{ document.vrsta }}</li>
+            <li>Broj verzija: {{ document.broj_verzija }}<span v-if="document.ima_finalnu"> - <span class="podebljano">ima finalnu</span></span></li>
+            <li>Kreiran {{ (new Date(document.prva_izmjena)).toLocaleString() }} od <span class="izmijenio">{{ document.prvi_izmijenio }}</span></li>
+            <li v-if="document.broj_verzija > 1">Zadnje izmijenjen {{ (new Date(document.zadnja_izmjena)).toLocaleString() }} od <span class="izmijenio">{{ document.zadnji_izmijenio }}</span></li>
+        </ul>
+    </div>
     <ErrorMessage v-if="errorMessage != null && errorMessage != ''">{{ errorMessage }}</ErrorMessage>
 </template>
+
+<style scoped>
+.documentHolder {
+    margin-bottom: var(--list-space);
+}
+
+.documentHolder:last-child {
+    margin-bottom: 0px;
+}
+
+ul {
+    list-style-type: none;
+    padding: var(--main-padding);
+    border: var(--border-width) solid var(--main-border-color);
+    border-radius: var(--main-padding);
+    background-color: var(--main-bg-color);
+}
+
+.izmijenio {
+    font-style: italic;
+}
+
+.podebljano {
+    font-weight: bold;
+}
+</style>
