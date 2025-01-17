@@ -109,9 +109,20 @@ button:hover:active {
     border: var(--border-width) solid var(--link-hover-color);
 }
 
-input {
+input, textarea, select {
     padding: var(--main-padding);
     border: var(--border);
     border-radius: var(--main-padding);
     font-size: 0.85em;
+    width: 100%;
+}
+
+textarea {
+    min-width: 100%;
+    max-width: 100%;
+}
+
+hr {
+    border-bottom: var(--border);
+    width: 100%;
 }

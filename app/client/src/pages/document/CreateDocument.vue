@@ -129,73 +129,179 @@ const submitForm = async () => {
 
 <template>
     <h2>Kreiraj dokument</h2>
-    <form @submit.prevent="submitForm">
-        <fieldset>
-            <label for="name">
-                Naziv dokumenta
-            </label>
-            <input type="text" id="name" v-model="name" placeholder="Naziv dokumenta" required />
-            <label for="description">
-                Opis dokumenta
-            </label>
-            <textarea id="description" v-model="description" placeholder="Opis" rows="5"></textarea>
-            <label for="documentType">
-                Vrsta dokumenta
-            </label>
-            <select name="documentType" id="documentType" v-model="documentType">
-                <option v-for="docType in docTypes" :value="docType">{{ docType }}</option>
-            </select>
-            <hr />
-            <label for="note">
-                Bilješka uz prvu verziju
-            </label>
-            <textarea id="note" v-model="note" placeholder="Bilješka uz prvu verziju" rows="3"></textarea>
-            <label for="final">
-                Finalna?
-            </label>
-            <input type="checkbox" id="final" name="final" v-model="final" />
-            <label for="file">
-                Datoteka
-            </label>
-            <input type="file" id="file" @change="handleFileChanged" placeholder="Početna datoteka" required />
-            <hr />
-            <h3>Dodijeli pravo korištenja grupama</h3>
-            <div v-for="(groupValue, groupIndex) in groupsToShare">
-                <select v-model="groupValue.selectedGroup">
-                    <option :value="possibleGroup.id" v-for="possibleGroup in groups.filter((g) => 
-                                !groupsToShare.map((s) => s.selectedGroup).includes(g.id) || g.id == groupValue.selectedGroup
-                            ).map((gg) => ({ id: gg.id, name: gg.naziv }))">
-                            {{ possibleGroup.name }}
-                    </option>
-                </select>
-                <select v-model="groupValue.selectedRole">
-                    <option v-for="possibleRole in roles" :value="possibleRole">{{ possibleRole }}</option>
-                </select>
-                <input type="button" v-on:click="removeGroup(groupIndex)" value="-">
-            </div>
-            <input type="button" v-if="groupsToShare.length < groups.length" v-on:click="addNewGroup" value="+">
-            <hr />
-            <h3>Dodijeli pravo korištenja pojedinim korisnicima</h3>
-            <div v-for="(userValue, userIndex) in usersToShare">
-                <select v-model="userValue.selectedUser">
-                    <option :value="possibleUser.id" v-for="possibleUser in users.filter((u) => 
-                                !usersToShare.map((s) => s.selectedUser).includes(u.id) || u.id == userValue.selectedUser)">
-                            {{ possibleUser.name }}
-                    </option>
-                </select>
-                <select v-model="userValue.selectedRole">
-                    <option v-for="possibleRole in roles" :value="possibleRole">{{ possibleRole }}</option>
-                </select>
-                <input type="button" v-on:click="removeUser(userIndex)" value="-">
-            </div>
-            <input type="button" v-if="usersToShare.length < users.length" v-on:click="addNewUser" value="+">
-            <hr />
-            <button type="submit">Prenesi prvu verziju dokumenta</button>
-        </fieldset>
-    </form>
-    <SuccessMessage v-if="successMessage != null && successMessage != ''">
-        <span>{{ successMessage }}</span>
-        <RouterLink :to="'/document/' + newDocumentId">Odi na novokreirani dokument</RouterLink>
-    </SuccessMessage>
-    <ErrorMessage v-if="errorMessage != null && errorMessage != ''">{{ errorMessage }}</ErrorMessage>
+    <div class="content">
+        <form @submit.prevent="submitForm">
+            <table>
+                <tr>
+                    <td colspan="10" class="form-center">
+                        <h3>Osnovno</h3>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <label for="name">
+                            Naziv dokumenta
+                        </label>
+                    </td>
+                    <td colspan="6">
+                        <input type="text" id="name" v-model="name" placeholder="Naziv dokumenta" required />
+                    </td>
+                    <td colspan="2"></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <label for="description">
+                            Opis dokumenta
+                        </label>
+                    </td>
+                    <td colspan="6">
+                        <textarea id="description" v-model="description" placeholder="Opis" rows="5"></textarea>
+                    </td>
+                    <td colspan="2"></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <label for="documentType">
+                            Vrsta dokumenta
+                        </label>
+                    </td>
+                    <td colspan="6">
+                        <select name="documentType" id="documentType" v-model="documentType">
+                            <option v-for="docType in docTypes" :value="docType">{{ docType }}</option>
+                        </select>
+                    </td>
+                    <td colspan="2"></td>
+                </tr>
+                <tr class="form-space"></tr>
+                <tr><td colspan="10"><hr></td></tr>
+                <tr class="form-space"></tr>
+                <tr>
+                    <td colspan="10" class="form-center">
+                        <h3>Prva verzija</h3>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <label for="note">
+                            Bilješka uz prvu verziju
+                        </label>
+                    </td>
+                    <td colspan="6">
+                        <input type="text" id="note" v-model="note" placeholder="Bilješka uz prvu verziju">
+                    </td>
+                    <td colspan="2"></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <label for="final">
+                            Finalna?
+                        </label>
+                    </td>
+                    <td colspan="1">
+                        <input type="checkbox" id="final" name="final" v-model="final" />
+                    </td>
+                    <td colspan="7"></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <label for="file">
+                            Datoteka
+                        </label>
+                    </td>
+                    <td colspan="6">
+                        <input type="file" id="file" @change="handleFileChanged" placeholder="Početna datoteka" required />
+                    </td>
+                    <td colspan="2"></td>
+                </tr>
+                <tr class="form-space"></tr>
+                <tr><td colspan="10"><hr></td></tr>
+                <tr class="form-space"></tr>
+                <tr>
+                    <td colspan="4" class="form-center">
+                        <table>
+                            <tr>
+                                <td colspan="6" class="form-center">
+                                    <h3>Dodijeli pravo korištenja pojedinim korisnicima</h3>
+                                </td>
+                            </tr>
+                            <tr v-for="(groupValue, groupIndex) in groupsToShare">
+                                <td colspan="3">
+                                    <select v-model="groupValue.selectedGroup">
+                                        <option :value="possibleGroup.id" v-for="possibleGroup in groups.filter((g) => 
+                                                    !groupsToShare.map((s) => s.selectedGroup).includes(g.id) || g.id == groupValue.selectedGroup
+                                                ).map((gg) => ({ id: gg.id, name: gg.naziv }))">
+                                                {{ possibleGroup.name }}
+                                        </option>
+                                    </select>
+                                </td>
+                                <td colspan="2">
+                                    <select v-model="groupValue.selectedRole">
+                                        <option v-for="possibleRole in roles" :value="possibleRole">{{ possibleRole }}</option>
+                                    </select>
+                                </td>
+                                <td colspan="1">
+                                    <input type="button" v-on:click="removeGroup(groupIndex)" value="-">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="1">
+                                    <input type="button" v-if="groupsToShare.length < groups.length" v-on:click="addNewGroup" value="+">
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td colspan="2"></td>
+                    <td colspan="4" class="form-center">
+                        <table>
+                            <tr>
+                                <td colspan="6" class="form-center">
+                                    <h3>Dodijeli pravo korištenja pojedinim korisnicima</h3>
+                                </td>
+                            </tr>
+                            <tr v-for="(userValue, userIndex) in usersToShare">
+                                <td colspan="3">
+                                    <select v-model="userValue.selectedUser">
+                                        <option :value="possibleUser.id" v-for="possibleUser in users.filter((u) => 
+                                                    !usersToShare.map((s) => s.selectedUser).includes(u.id) || u.id == userValue.selectedUser)">
+                                                {{ possibleUser.name }}
+                                        </option>
+                                    </select>
+                                </td>
+                                <td colspan="2">
+                                    <select v-model="userValue.selectedRole">
+                                        <option v-for="possibleRole in roles" :value="possibleRole">{{ possibleRole }}</option>
+                                    </select>
+                                </td>
+                                <td colspan="1">
+                                    <input type="button" v-on:click="removeUser(userIndex)" value="-">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="1">
+                                    <input type="button" v-if="usersToShare.length < users.length" v-on:click="addNewUser" value="+">
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr class="form-space"></tr>
+                <tr>
+                    <td colspan="4"></td>
+                    <td colspan="2" class="form-center">
+                        <button type="submit">Prenesi prvu verziju dokumenta</button>
+                    </td>
+                    <td colspan="4"></td>
+                </tr>
+                <tr>
+                    <td colspan="10" class="form-center">
+                        <SuccessMessage v-if="successMessage != null && successMessage != ''">
+                            <span>{{ successMessage }}</span>
+                            <RouterLink :to="'/document/' + newDocumentId">Odi na novokreirani dokument</RouterLink>
+                        </SuccessMessage>
+                        <ErrorMessage v-if="errorMessage != null && errorMessage != ''">{{ errorMessage }}</ErrorMessage>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
 </template>
