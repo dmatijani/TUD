@@ -67,14 +67,18 @@ const submitForm = async () => {
                 <tr class="form-space"></tr>
                 <tr>
                     <td colspan="2"></td>
-                    <td>
+                    <td class="form-center">
                         <button type="submit">Prijavi</button>
                     </td>
                     <td colspan="2"></td>
                 </tr>
+                <tr>
+                    <td colspan="5" class="form-center">
+                        <ErrorMessage v-if="errorMessage != null && errorMessage != ''">{{ errorMessage }}</ErrorMessage>
+                    </td>
+                </tr>
             </table>
         </form>
-        <ErrorMessage v-if="errorMessage != null && errorMessage != ''">{{ errorMessage }}</ErrorMessage>
     </div>
 </template>
 

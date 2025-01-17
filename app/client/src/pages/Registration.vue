@@ -40,42 +40,96 @@ const submitForm = async () => {
 
 <template>
     <h2>Registracija</h2>
-    <form @submit.prevent="submitForm">
-        <fieldset>
-            <label for="name">
-                Ime
-            </label>
-            <input type="text" id="name" v-model="name" placeholder="Ime" required />
-            <label for="surname">
-                Prezime
-            </label>
-            <input type="text" id="surname" v-model="surname" placeholder="Prezime" required />
-            <label for="email">
-                Email
-            </label>
-            <input type="email" id="email" v-model="email" placeholder="Email" required />
-            <label for="username">
-                Korisničko ime
-            </label>
-            <input type="text" id="username" v-model="username" placeholder="Korisničko ime" required />
-            <label for="password">
-                Lozinka
-            </label>
-            <input type="password" id="password" v-model="password" placeholder="Lozinka" required />
-            <label for="address">
-                Adresa
-            </label>
-            <input type="text" id="address" v-model="address" placeholder="Adresa (neobavezno)" />
-            <label for="phone">
-                Telefon
-            </label>
-            <input type="text" id="phone" v-model="phone" placeholder="Telefon (neobavezno)" />
-            <button type="submit">Registriraj se</button>
-        </fieldset>
-    </form>
-    <SuccessMessage v-if="successMessage != null && successMessage != ''">
-        <span>{{ successMessage }}</span>
-        <RouterLink to="/login">Odi na prijavu</RouterLink>
-    </SuccessMessage>
-    <ErrorMessage v-if="errorMessage != null && errorMessage != ''">{{ errorMessage }}</ErrorMessage>
+    <div class="content">
+        <form @submit.prevent="submitForm">
+            <table>
+                <tr>
+                    <td colspan="2">
+                        <label for="name">
+                            Ime i prezime
+                        </label>
+                    </td>
+                    <td colspan="3">
+                        <input type="text" id="name" v-model="name" placeholder="Ime" required />
+                    </td>
+                    <td colspan="3">
+                        <input type="text" id="surname" v-model="surname" placeholder="Prezime" required />
+                    </td>
+                    <td colspan="2"></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <label for="email">
+                            Email
+                        </label>
+                    </td>
+                    <td colspan="6">
+                        <input type="email" id="email" v-model="email" placeholder="Email" required />
+                    </td>
+                    <td colspan="2"></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <label for="username">
+                            Korisničko ime
+                        </label>
+                    </td>
+                    <td colspan="6">
+                        <input type="text" id="username" v-model="username" placeholder="Korisničko ime" required />
+                    </td>
+                    <td colspan="2"></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <label for="password">
+                            Lozinka
+                        </label>
+                    </td>
+                    <td colspan="6">
+                        <input type="password" id="password" v-model="password" placeholder="Lozinka" required />
+                    </td>
+                    <td colspan="2"></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <label for="address">
+                            Adresa
+                        </label>
+                    </td>
+                    <td colspan="6">
+                        <input type="text" id="address" v-model="address" placeholder="Adresa (neobavezno)" />
+                    </td>
+                    <td colspan="2"></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <label for="phone">
+                            Telefon
+                        </label>
+                    </td>
+                    <td colspan="6">
+                        <input type="text" id="phone" v-model="phone" placeholder="Telefon (neobavezno)" />
+                    </td>
+                    <td colspan="2"></td>
+                </tr>
+                <tr class="form-space"></tr>
+                <tr>
+                    <td colspan="4"></td>
+                    <td colspan="2" class="form-center">
+                        <button type="submit">Registriraj se</button>
+                    </td>
+                    <td colspan="4"></td>
+                </tr>
+                <tr>
+                    <td colspan="10" class="form-center">
+                        <SuccessMessage v-if="successMessage != null && successMessage != ''">
+                        <span>{{ successMessage }}</span>
+                        <RouterLink to="/login">Odi na prijavu</RouterLink>
+                    </SuccessMessage>
+                    <ErrorMessage v-if="errorMessage != null && errorMessage != ''">{{ errorMessage }}</ErrorMessage>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
 </template>

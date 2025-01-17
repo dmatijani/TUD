@@ -72,6 +72,10 @@ form table td {
     height: var(--form-space);
 }
 
+.form-center {
+    text-align: center;
+}
+
 .last-row {
     padding: var(--padding);
 }
