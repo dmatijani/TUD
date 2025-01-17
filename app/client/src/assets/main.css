@@ -130,3 +130,14 @@ hr {
     border-bottom: var(--border);
     width: 100%;
 }
+
+.section {
+    background-color: var(--bg-color);
+    border: var(--border);
+    border-radius: 16px;
+    padding: var(--main-padding);
+}
+
+.section h3 {
+    text-align: center;
+}

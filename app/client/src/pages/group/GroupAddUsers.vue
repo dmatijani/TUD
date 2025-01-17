@@ -67,21 +67,45 @@ const submitForm = async() => {
 </script>
 
 <template>
-    <h3>Dodavanje članova</h3>
-    <div v-if="users != null">
-        <p v-if="users.length == 0">Nema korisnika za dodati!</p>
-        <form v-else @submit.prevent="submitForm" id="newUserForm">
-            <fieldset>
-                <label for="user">
-                    Novi korisnik
-                </label>
-                <select name="user" id="userId" form="newUserForm" v-model="selectedUserId">
-                    <option v-for="user in users" :value="user.id">{{ user.ime }} {{ user.prezime }}</option>
-                </select>
-                <button type="submit">Prijavi</button>
-            </fieldset>
-        </form>
+    <div class="content">
+        <div v-if="users != null">
+            <p v-if="users.length == 0">Nema korisnika za dodati!</p>
+            <form v-else @submit.prevent="submitForm" id="newUserForm">
+                <table>
+                    <tr>
+                        <td colspan="5">
+                            <h3>Dodavanje članova</h3>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="user">
+                                Novi korisnik
+                            </label>
+                        </td>
+                        <td colspan="3">
+                            <select name="user" id="userId" form="newUserForm" v-model="selectedUserId">
+                                <option v-for="user in users" :value="user.id">{{ user.ime }} {{ user.prezime }}</option>
+                            </select>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr class="form-space"></tr>
+                    <tr>
+                        <td colspan="2"></td>
+                        <td class="form-center">
+                            <button type="submit">Prijavi</button>
+                        </td>
+                        <td colspan="2"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="form-center">
+                            <SuccessMessage v-if="successMessage != null && successMessage != ''">{{ successMessage }}</SuccessMessage>
+                            <ErrorMessage v-if="errorMessage != null && errorMessage != ''">{{ errorMessage }}</ErrorMessage>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
     </div>
-    <SuccessMessage v-if="successMessage != null && successMessage != ''">{{ successMessage }}</SuccessMessage>
-    <ErrorMessage v-if="errorMessage != null && errorMessage != ''">{{ errorMessage }}</ErrorMessage>
 </template>

@@ -81,11 +81,3 @@ const submitForm = async () => {
         </form>
     </div>
 </template>
-
-<style scoped>
-.content {
-    max-height: 800px;
-    display: flex;
-    align-items: center;
-}
-</style>

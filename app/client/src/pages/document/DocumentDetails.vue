@@ -26,6 +26,10 @@ const loadDocumentData = async () => {
     }
 }
 
+const navigate = (path) => {
+    router.push(path);
+}
+
 onMounted(async () => {
     if (!documentId) {
         router.push({ name: 'prijava' });
@@ -52,46 +56,57 @@ const downloadFile = async (fileId, fileName) => {
 
 <template>
     <h2>Detalji dokumenta <span v-if="documentData">'{{ documentData.naziv }}'</span></h2>
-    <div v-if="documentData != null">
-        <h3>Osnovno</h3>
-        <ul>
-            <li>Naziv: <span>{{ documentData.naziv }}</span></li>
-            <li>Opis: <span>{{ documentData.opis }}</span></li>
-            <li>Vrsta: <span>{{ documentData.vrsta }}</span></li>
-            <li v-if="documentData.pravo == 'vlasnik'">Vi ste vlasnik dokumenta</li>
-        </ul>
-    </div>
-    <div v-if="documentData != null">
-        <h3>Verzije</h3>
-        <div v-if="documentData.pravo == 'vlasnik' && !documentData.ima_finalnu">
-            <RouterLink :to="'/documents/newVersion/' + documentId">Dodaj novu verziju dokumenta</RouterLink>
+    <div class="content">
+        <ErrorMessage v-if="errorMessage != null && errorMessage != ''">{{ errorMessage }}</ErrorMessage>
+        <div class="section" v-if="documentData != null">
+            <h3>Osnovno</h3>
+            <ul>
+                <li>Naziv: <span>{{ documentData.naziv }}</span></li>
+                <li>Opis: <span>{{ documentData.opis }}</span></li>
+                <li>Vrsta: <span>{{ documentData.vrsta }}</span></li>
+                <li v-if="documentData.pravo == 'vlasnik'">Vi ste vlasnik dokumenta</li>
+            </ul>
         </div>
-        <ul>
-            <li v-for="verzija in documentData.verzije"><ul>
-                <li>Kreirana: <span>{{ verzija.vrijedi_od }}</span></li>
-                <li>Verzija: <span>{{ verzija.verzija }}</span></li>
-                <li v-if="verzija.finalna">Finalna verzija</li>
-                <li>Napomena: <span>{{ verzija.napomena }}</span></li>
-                <li>Kreirao: <span>{{ verzija.kreirao }}</span></li>
-                <li>Datoteka: <span>{{ verzija.naziv_datoteke }}</span></li>
-                <li><button v-on:click="downloadFile(verzija.datoteka_id, verzija.naziv_datoteke)">Preuzmi</button></li>
-            </ul></li>
-        </ul>
+        <div style="height: var(--form-space);"></div>
+        <div class="section" v-if="documentData != null">
+            <h3>Verzije</h3>
+            <div v-if="documentData.pravo == 'vlasnik' && !documentData.ima_finalnu">
+                <button v-on:click="navigate('/documents/newVersion/' + documentId)">Dodaj novu verziju</button>
+            </div>
+            <ul>
+                <li v-for="verzija in documentData.verzije">
+                    <div style="height: var(--form-space);"></div>
+                    <ul>
+                        <li><h4>Verzija {{ verzija.verzija }}<span v-if="verzija.finalna"> - finalna verzija</span></h4></li>
+                        <li>Kreirana: <span>{{ (new Date(verzija.vrijedi_od)).toLocaleString() }} od korisnika {{ verzija.kreirao }}</span></li>
+                        <li>Napomena: <span>{{ verzija.napomena }}</span></li>
+                        <li>Datoteka: <span>{{ verzija.naziv_datoteke }}</span></li>
+                        <li><button v-on:click="downloadFile(verzija.datoteka_id, verzija.naziv_datoteke)">Preuzmi</button></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div style="height: var(--form-space);"></div>
+        <div class="section" v-if="documentData != null">
+            <h3>Dijeljeno sa</h3>
+            <ul>
+                <li v-for="dijeljenoKorisnici in documentData.dijeljeno_s_korisnicima">
+                    <span>Korisnik <span>{{ dijeljenoKorisnici.naziv }} - {{ dijeljenoKorisnici.pravo }}</span></span>
+                </li>
+                <li v-for="dijeljenoGrupa in documentData.dijeljeno_s_grupama">
+                    <span>Svi korisnici iz grupe <span>{{ dijeljenoGrupa.naziv }} - {{ dijeljenoGrupa.pravo }}</span></span>
+                </li>
+            </ul>
+        </div>
     </div>
-    <div v-if="documentData != null">
-        <h3>Dijeljeno sa</h3>
-        <ul>
-            <li v-for="dijeljenoKorisnici in documentData.dijeljeno_s_korisnicima"><ul>
-                <li>Naziv: <span>{{ dijeljenoKorisnici.naziv }}</span></li>
-                <li>Pravo: <span>{{ dijeljenoKorisnici.pravo }}</span></li>
-            </ul></li>
-        </ul>
-        <ul>
-            <li v-for="dijeljenoGrupa in documentData.dijeljeno_s_grupama"><ul>
-                <li>Naziv: <span>{{ dijeljenoGrupa.naziv }}</span></li>
-                <li>Pravo: <span>{{ dijeljenoGrupa.pravo }}</span></li>
-            </ul></li>
-        </ul>
-    </div>
-    <ErrorMessage v-if="errorMessage != null && errorMessage != ''">{{ errorMessage }}</ErrorMessage>
 </template>
+
+<style scoped>
+ul {
+    list-style-type: none;
+}
+
+.padding {
+    padding: var(--main-padding);
+}
+</style>

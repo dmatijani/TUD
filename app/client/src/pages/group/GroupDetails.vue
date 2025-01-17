@@ -78,27 +78,49 @@ const removeUser = async(selectedUserId) => {
 
 <template>
     <h2>Grupa <span v-if="groupData">'{{ groupData.naziv }}'</span></h2>
-    <div v-if="groupData != null">
-        <h3>Osnovno</h3>
-        <li>Naziv: <span>{{ groupData.naziv }}</span></li>
-        <li v-if="groupData.vlasnik.trim() != ''">Vlasnik: <span>{{ groupData.vlasnik }}</span><span v-if="userIsOwner" style="font-weight: bold;"> - vi</span></li>
-        <li v-if="groupData.email_vlasnika != null">Email vlasnika: <span>{{ groupData.email_vlasnika }}</span></li>
-    </div>
-    <div v-if="groupData != null">
-        <h3>Članovi</h3>
-        <ul>
-            <li v-for="clan in groupData.clanovi"><ul>
-                <li>Ime i prezime: <span>{{ clan.korisnik }}</span></li>
-                <li>Vrijeme učlanjivanja: <span>{{ clan.vrijeme_uclanjivanja }}</span></li>
-                <li v-if="clan.je_vlasnik">Vlasnik</li>
-                <li v-else-if="userIsOwner"><button v-on:click="removeUser(clan.korisnik_id)">Ukloni</button></li>
-            </ul></li>
-        </ul>
-        <SuccessMessage v-if="successMessage != null && successMessage != ''">{{ successMessage }}</SuccessMessage>
-        <ErrorMessage v-if="errorMessage != null && errorMessage != ''">{{ errorMessage }}</ErrorMessage>
-
-        <div v-if="userIsOwner">
-            <GroupAddUsers :groupId="groupData.id" @userAdded="handleUserAdded" ref="groupAddUsersComponent" />
+    <div class="content">
+        <div class="section" v-if="groupData != null">
+            <h3>Osnovno</h3>
+            <ul>
+                <li>Naziv: <span>{{ groupData.naziv }}</span></li>
+                <li v-if="groupData.vlasnik.trim() != ''">Vlasnik: <span>{{ groupData.vlasnik }}</span><span v-if="userIsOwner" style="font-weight: bold;"> - vi ste vlasnik</span></li>
+                <li v-if="groupData.email_vlasnika != null">Email vlasnika: <span>{{ groupData.email_vlasnika }}</span></li>
+            </ul>
+        </div>
+        <div style="height: var(--form-space);"></div>
+        <div class="section" v-if="groupData != null">
+            <h3>Članovi</h3>
+            <div class="padding" v-for="clan in groupData.clanovi">
+                <table>
+                    <tr>
+                        <td>
+                            <ul>
+                                <li><span>{{ clan.korisnik }}</span><span v-if="clan.je_vlasnik"> - vlasnik grupe</span></li>
+                                <li>Član od <span>{{ (new Date(clan.vrijeme_uclanjivanja)).toLocaleString() }}</span></li>
+                            </ul>
+                        </td>
+                        <td>
+                            <button v-if="userIsOwner" v-on:click="removeUser(clan.korisnik_id)">Ukloni</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <SuccessMessage v-if="successMessage != null && successMessage != ''">{{ successMessage }}</SuccessMessage>
+            <ErrorMessage v-if="errorMessage != null && errorMessage != ''">{{ errorMessage }}</ErrorMessage>
         </div>
     </div>
+
+    <div v-if="userIsOwner">
+        <GroupAddUsers :groupId="groupData.id" @userAdded="handleUserAdded" ref="groupAddUsersComponent" />
+    </div>
 </template>
+
+<style scoped>
+ul {
+    list-style-type: none;
+}
+
+.padding {
+    padding: var(--main-padding);
+}
+</style>

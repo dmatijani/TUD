@@ -87,6 +87,15 @@ ul {
     background-color: var(--main-bg-color);
 }
 
+ul:hover {
+    background-color: var(--main-color);
+}
+
+ul:hover:active {
+    background-color: var(--main-border-color);
+    border: var(--border-width) solid var(--link-hover-color);
+}
+
 .izmijenio {
     font-style: italic;
 }
