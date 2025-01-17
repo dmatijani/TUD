@@ -39,18 +39,49 @@ const submitForm = async () => {
 
 <template>
     <h2>Prijava</h2>
-    <form @submit.prevent="submitForm">
-        <fieldset>
-            <label for="username">
-                Korisničko ime
-            </label>
-            <input type="text" id="username" v-model="username" placeholder="Korisničko ime" required />
-            <label for="password">
-                Lozinka
-            </label>
-            <input type="password" id="password" v-model="password" placeholder="Lozinka" required />
-            <button type="submit">Prijavi</button>
-        </fieldset>
-    </form>
-    <ErrorMessage v-if="errorMessage != null && errorMessage != ''">{{ errorMessage }}</ErrorMessage>
+    <div class="content">
+        <form @submit.prevent="submitForm">
+            <table>
+                <tr>
+                    <td>
+                        <label for="username">
+                            Korisničko ime
+                        </label>
+                    </td>
+                    <td colspan="3">
+                        <input type="text" id="username" v-model="username" placeholder="Korisničko ime" required />
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="password">
+                            Lozinka
+                        </label>
+                    </td>
+                    <td colspan="3">
+                        <input type="password" id="password" v-model="password" placeholder="Lozinka" required />
+                    </td>
+                    <td></td>
+                </tr>
+                <tr class="form-space"></tr>
+                <tr>
+                    <td colspan="2"></td>
+                    <td>
+                        <button type="submit">Prijavi</button>
+                    </td>
+                    <td colspan="2"></td>
+                </tr>
+            </table>
+        </form>
+        <ErrorMessage v-if="errorMessage != null && errorMessage != ''">{{ errorMessage }}</ErrorMessage>
+    </div>
 </template>
+
+<style scoped>
+.content {
+    max-height: 800px;
+    display: flex;
+    align-items: center;
+}
+</style>

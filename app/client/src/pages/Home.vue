@@ -2,7 +2,5 @@
 </script>
 
 <template>
-    <main>
-        <p>Početna stranica</p>
-    </main>
+    <h2>Dobrodošli u TUD!</h2>
 </template>

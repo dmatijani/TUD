@@ -10,6 +10,9 @@
     --border-width: 1px;
     --border: var(--border-width) solid var(--border-color);
     --nav-width: 220px;
+    --content-padding: 30px;
+    --form-padding: 2px;
+    --form-space: 20px;
 }
 
 * {
@@ -35,4 +38,76 @@ a:hover {
 
 button {
     background-color: #00000000;
+}
+
+h2 {
+    width: 100%;
+    text-align: center;
+    background-color: var(--bg-color);
+    border-bottom: var(--border);
+    padding: var(--main-padding);
+}
+
+.content {
+    padding: var(--content-padding);
+}
+
+form {
+    background-color: var(--bg-color);
+    border: var(--border);
+    border-radius: 16px;
+    padding: var(--main-padding);
+}
+
+form table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+form table td {
+    padding: var(--form-padding);
+}
+
+.form-space {
+    height: var(--form-space);
+}
+
+.last-row {
+    padding: var(--padding);
+}
+
+form input {
+    width: 100%;
+}
+
+body {
+    min-height: 1vh;
+}
+
+#app {
+    height: 100%;
+}
+
+button {
+    min-width: 100px;
+    padding: var(--main-padding);
+    background-color: var(--main-bg-color);
+    border: var(--border-width) solid var(--main-border-color);
+    border-radius: var(--main-padding);
+}
+
+button:hover {
+    background-color: var(--main-color);
+}
+
+button:hover:active {
+    background-color: var(--main-border-color);
+    border: var(--border-width) solid var(--link-hover-color);
+}
+
+input {
+    padding: var(--main-padding);
+    border: var(--border);
+    border-radius: var(--main-padding);
+    font-size: 0.85em;
 }
