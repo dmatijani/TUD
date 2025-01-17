@@ -63,26 +63,65 @@ const submitForm = async () => {
 
 <template>
     <h2>Prenesi novu verziju dokumenta</h2>
-    <form @submit.prevent="submitForm">
-        <fieldset>
-            <label for="note">
-                Bilješka uz novu verziju
-            </label>
-            <textarea id="note" v-model="note" placeholder="Bilješka uz novu verziju" rows="3"></textarea>
-            <label for="final">
-                Finalna?
-            </label>
-            <input type="checkbox" id="final" name="final" v-model="final" />
-            <label for="file">
-                Datoteka
-            </label>
-            <input type="file" id="file" @change="handleFileChanged" placeholder="Početna datoteka" required />
-            <button type="submit">Prenesi novu verziju dokumenta</button>
-        </fieldset>
-    </form>
-    <SuccessMessage v-if="successMessage != null && successMessage != ''">
-        <span>{{ successMessage }}</span>
-        <RouterLink :to="'/document/' + documentId">Odi na dokument</RouterLink>
-    </SuccessMessage>
-    <ErrorMessage v-if="errorMessage != null && errorMessage != ''">{{ errorMessage }}</ErrorMessage>
+    <div class="content">
+        <form @submit.prevent="submitForm">
+            <table>
+                <tr>
+                    <td colspan="10" class="form-center">
+                        <h3>Nova verzija</h3>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <label for="note">
+                            Bilješka uz novu verziju
+                        </label>
+                    </td>
+                    <td colspan="6">
+                        <input type="text" id="note" v-model="note" placeholder="Bilješka uz novu verziju">
+                    </td>
+                    <td colspan="2"></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <label for="final">
+                            Finalna?
+                        </label>
+                    </td>
+                    <td colspan="1">
+                        <input type="checkbox" id="final" name="final" v-model="final" />
+                    </td>
+                    <td colspan="7"></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <label for="file">
+                            Datoteka
+                        </label>
+                    </td>
+                    <td colspan="6">
+                        <input type="file" id="file" @change="handleFileChanged" placeholder="Početna datoteka" required />
+                    </td>
+                    <td colspan="2"></td>
+                </tr>
+                <tr class="form-space"></tr>
+                <tr>
+                    <td colspan="4"></td>
+                    <td colspan="2" class="form-center">
+                        <button type="submit">Prenesi novu verziju dokumenta</button>
+                    </td>
+                    <td colspan="4"></td>
+                </tr>
+                <tr>
+                    <td colspan="10" class="form-center">
+                        <SuccessMessage v-if="successMessage != null && successMessage != ''">
+                            <span>{{ successMessage }} </span>
+                            <RouterLink :to="'/document/' + documentId">Odi na dokument</RouterLink>
+                        </SuccessMessage>
+                        <ErrorMessage v-if="errorMessage != null && errorMessage != ''">{{ errorMessage }}</ErrorMessage>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
 </template>

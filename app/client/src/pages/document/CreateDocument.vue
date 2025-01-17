@@ -295,7 +295,7 @@ const submitForm = async () => {
                 <tr>
                     <td colspan="10" class="form-center">
                         <SuccessMessage v-if="successMessage != null && successMessage != ''">
-                            <span>{{ successMessage }}</span>
+                            <span>{{ successMessage }} </span>
                             <RouterLink :to="'/document/' + newDocumentId">Odi na novokreirani dokument</RouterLink>
                         </SuccessMessage>
                         <ErrorMessage v-if="errorMessage != null && errorMessage != ''">{{ errorMessage }}</ErrorMessage>

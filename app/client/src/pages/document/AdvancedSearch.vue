@@ -123,82 +123,171 @@ const submitForm = async () => {
 
 <template>
     <h2>Napredno pretraživanje dokumenata</h2>
-    <form @submit.prevent="submitForm">
-        <fieldset>
-            <label for="namePart">
-                Dio naziva
-            </label>
-            <input type="text" id="namePart" v-model="namePart" placeholder="Sadrži u nazivu" />
-            <label for="documentType">
-                Vrsta dokumenta
-            </label>
-            <select name="documentType" id="documentType" v-model="documentType">
-                <option v-for="docType in docTypes" :value="docType">{{ docType }}</option>
-            </select>
-            <label for="minNumberOfVersions">
-                Najmanji broj verzija
-            </label>
-            <input type="number" name="minNumberOfVersions" id="minNumberOfVersions" v-model="minNumberOfVersions" min="1">
-            <label for="maxNumberOfVersions">
-                Najveći broj verzija
-            </label>
-            <input type="number" name="maxNumberOfVersions" id="maxNumberOfVersions" v-model="maxNumberOfVersions" min="1">
-            <label for="minCreatedDate">
-                Kreirano najranije
-            </label>
-            <input type="datetime-local" name="minCreatedDate" id="minCreatedDate" v-model="minCreatedDate" >
-            <label for="maxCreatedDate">
-                Kreirano najkasnije
-            </label>
-            <input type="datetime-local" name="maxCreatedDate" id="maxCreatedDate" v-model="maxCreatedDate" >
-            <label for="minLastModifiedDate">
-                Zadnja izmjena najranije
-            </label>
-            <input type="datetime-local" name="minLastModifiedDate" id="minLastModifiedDate" v-model="minLastModifiedDate" >
-            <label for="maxLastModifiedDate">
-                Zadnja izmjena najkasnije
-            </label>
-            <input type="datetime-local" name="maxLastModifiedDate" id="maxLastModifiedDate" v-model="maxLastModifiedDate" >
-            <label for="hasFinal">
-                Ima finalnu?
-            </label>
-            <select name="hasFinal" id="hasFinal" v-model="hasFinal">
-                <option :value="true">Samo koji ima finalnu verziju</option>
-                <option :value="false">Samo koji nema finalnu verziju</option>
-            </select>
-            <label for="created">
-                Stvorio dokument
-            </label>
-            <select name="created" id="created" v-model="created">
-                <option v-for="user in users" :value="user.id">{{ user.naziv }}</option>
-            </select>
-            <hr />
-            <h3>Dijeljeno s grupama</h3>
-            <div v-for="(groupValue, groupIndex) in sharedWithGroups">
-                <select v-model="sharedWithGroups[groupIndex]">
-                    <option :value="group.id" v-for="group in groups
-                        .filter((g) => !sharedWithGroups.includes(g.id) || g.id == groupValue)">{{ group.naziv }}</option>
-                </select>
-                <input type="button" v-on:click="removeGroup(groupIndex)" value="-">
-            </div>
-            <input type="button" v-if="sharedWithGroups.length < groups.length" v-on:click="addNewGroup" value="+">
-            <hr />
-            <h3>Dijeljeno s korisnicima</h3>
-            <div v-for="(userValue, userIndex) in sharedWithUsers">
-                <select v-model="sharedWithUsers[userIndex]">
-                    <option :value="user.id" v-for="user in users
-                        .filter((u) => !sharedWithUsers.includes(u.id) || u.id == userValue)">{{ user.naziv }}</option>
-                </select>
-                <input type="button" v-on:click="removeUser(userIndex)" value="-">
-            </div>
-            <input type="button" v-if="sharedWithUsers.length < users.length" v-on:click="addNewUser" value="+">
-            <hr />
-            <input type="button" value="Očisti filtere" v-on:click="clearFilters">
-            <input type="button" value="Očisti rezultate" v-on:click="clearResults">
-            <button type="submit">Pretraži</button>
-        </fieldset>
-    </form>
-    <ErrorMessage v-if="errorMessage != null && errorMessage != ''">{{ errorMessage }}</ErrorMessage>
-    <h3>Rezultati</h3>
-    <DocumentList method="POST" path="advancedSearch" ref="documentListComponent" loadOnMounted="false" />
+    <div class="content">
+        <form @submit.prevent="submitForm">
+            <table>
+                <tr>
+                    <td colspan="6" class="form-center">
+                        <h3>Parametri pretraživanja</h3>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <label for="namePart">
+                            Dio naziva
+                        </label>
+                        <input type="text" id="namePart" v-model="namePart" placeholder="Sadrži u nazivu" />
+                    </td>
+                    <td colspan="3">
+                        <label for="documentType">
+                            Vrsta dokumenta
+                        </label>
+                        <select name="documentType" id="documentType" v-model="documentType">
+                            <option v-for="docType in docTypes" :value="docType">{{ docType }}</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <label for="minNumberOfVersions">
+                            Najmanji broj verzija
+                        </label>
+                        <input type="number" name="minNumberOfVersions" id="minNumberOfVersions" v-model="minNumberOfVersions" min="1">
+                    </td>
+                    <td colspan="3">
+                        <label for="maxNumberOfVersions">
+                            Najveći broj verzija
+                        </label>
+                        <input type="number" name="maxNumberOfVersions" id="maxNumberOfVersions" v-model="maxNumberOfVersions" min="1">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <label for="minCreatedDate">
+                            Kreirano najranije
+                        </label>
+                        <input type="datetime-local" name="minCreatedDate" id="minCreatedDate" v-model="minCreatedDate" >
+                    </td>
+                    <td colspan="3">
+                        <label for="maxCreatedDate">
+                            Kreirano najkasnije
+                        </label>
+                        <input type="datetime-local" name="maxCreatedDate" id="maxCreatedDate" v-model="maxCreatedDate" >
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <label for="minLastModifiedDate">
+                            Zadnja izmjena najranije
+                        </label>
+                        <input type="datetime-local" name="minLastModifiedDate" id="minLastModifiedDate" v-model="minLastModifiedDate" >
+                    </td>
+                    <td colspan="3">
+                        <label for="maxLastModifiedDate">
+                            Zadnja izmjena najkasnije
+                        </label>
+                        <input type="datetime-local" name="maxLastModifiedDate" id="maxLastModifiedDate" v-model="maxLastModifiedDate" >
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <label for="hasFinal">
+                            Ima finalnu?
+                        </label>
+                        <select name="hasFinal" id="hasFinal" v-model="hasFinal">
+                            <option :value="true">Samo koji ima finalnu verziju</option>
+                            <option :value="false">Samo koji nema finalnu verziju</option>
+                        </select>
+                    </td>
+                    <td colspan="3">
+                        <label for="created">
+                            Stvorio dokument
+                        </label>
+                        <select name="created" id="created" v-model="created">
+                            <option v-for="user in users" :value="user.id">{{ user.naziv }}</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr class="form-space"></tr>
+                <tr><td colspan="6"><hr></td></tr>
+                <tr class="form-space"></tr>
+                <tr>
+                    <td colspan="3" style="border-right: var(--border);">
+                        <table>
+                            <tr>
+                                <td colspan="6" class="form-center">
+                                    <h3>Dijeljeno s grupama</h3>
+                                </td>
+                            </tr>
+                            <tr v-for="(groupValue, groupIndex) in sharedWithGroups">
+                                <td colspan="5">
+                                    <select v-model="sharedWithGroups[groupIndex]">
+                                        <option :value="group.id" v-for="group in groups
+                                            .filter((g) => !sharedWithGroups.includes(g.id) || g.id == groupValue)">{{ group.naziv }}</option>
+                                    </select>
+                                </td>
+                                <td colspan="1">
+                                    <input type="button" v-on:click="removeGroup(groupIndex)" value="-">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="1">
+                                    <input type="button" v-if="sharedWithGroups.length < groups.length" v-on:click="addNewGroup" value="+">
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td colspan="3">
+                        <table>
+                            <tr>
+                                <td colspan="6" class="form-center">
+                                    <h3>Dijeljeno s korisnicima</h3>
+                                </td>
+                            </tr>
+                            <tr v-for="(userValue, userIndex) in sharedWithUsers">
+                                <td colspan="5">
+                                    <select v-model="sharedWithUsers[userIndex]">
+                                        <option :value="user.id" v-for="user in users
+                                            .filter((u) => !sharedWithUsers.includes(u.id) || u.id == userValue)">{{ user.naziv }}</option>
+                                    </select>
+                                </td>
+                                <td colspan="1">
+                                    <input type="button" v-on:click="removeUser(userIndex)" value="-">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="1">
+                                    <input type="button" v-if="sharedWithUsers.length < users.length" v-on:click="addNewUser" value="+">
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr class="form-space"></tr>
+                <tr><td colspan="6"><hr></td></tr>
+                <tr class="form-space"></tr>
+                <tr>
+                    <td colspan="1">
+                        <input type="button" value="Očisti filtere" v-on:click="clearFilters">
+                    </td>
+                    <td colspan="1">
+                        <input type="button" value="Očisti rezultate" v-on:click="clearResults">
+                    </td>
+                    <td colspan="2" class="form-center">
+                        <button style="width: 50%;" type="submit">Pretraži</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="6" class="form-center">
+                        <ErrorMessage v-if="errorMessage != null && errorMessage != ''">{{ errorMessage }}</ErrorMessage>
+                    </td>
+                </tr>
+            </table>
+        </form>
+        
+    </div>
+    <h2>Rezultati</h2>
+    <div class="content">
+        <DocumentList method="POST" path="advancedSearch" ref="documentListComponent" loadOnMounted="false" />
+    </div>
 </template>
