@@ -1,0 +1,38 @@
+:root {
+    --bg-color: #EFEFEF;
+    --border-color: #747474;
+    --main-color: #2bff00;
+    --main-bg-color: #9aff86;
+    --main-border-color: #42a62e;
+    --main-padding: 8px;
+    --font-color: black;
+    --link-hover-color: #0b4400;
+    --border-width: 1px;
+    --border: var(--border-width) solid var(--border-color);
+    --nav-width: 220px;
+}
+
+* {
+    margin: 0px;
+    padding: 0px;
+    border: 0px;
+    font-family: 'Trebuchet MS', sans-serif;
+    box-sizing: border-box;
+}
+
+a {
+    color: black;
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--link-hover-color);
+}
+
+.hoverable:hover {
+    color: var(--link-hover-color);
+}
+
+button {
+    background-color: #00000000;
+}

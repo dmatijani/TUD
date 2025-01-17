@@ -20,9 +20,8 @@ const logout = async () => {
     }
 }
 
-const loggedInUserName = () => {
-    let user = authController.getLoggedInUser();
-    return `${user.name} ${user.surname}`;
+const navigate = (name) => {
+    router.push({ name: name });
 }
 
 const goBack = () => {
@@ -33,18 +32,36 @@ const goBack = () => {
 <template>
     <ul>
         <Authenticated>
-            <button v-on:click="goBack"><</button>
+            <li v-on:click="goBack"><img src="@/assets/arrow_back.svg" alt="Natrag"></li>
         </Authenticated>
-        <li><RouterLink to="/">Početna</RouterLink></li>
-        <li><RouterLink to="/register">Registracija</RouterLink></li>
+        <li v-on:click="navigate('pocetna')">Početna</li>
+        <li v-on:click="navigate('registracija')">Registracija</li>
         <NotAuthenticated>
-            <li><RouterLink to="/login">Prijava</RouterLink></li>
+            <li v-on:click="navigate('prijava')">Prijava</li>
         </NotAuthenticated>
         <Authenticated>
-            <li><RouterLink to="/documents">Dokumenti</RouterLink></li>
-            <li><span>Prijavljen: {{ loggedInUserName() }}</span></li>
-            <li><RouterLink to="/profile">Profil</RouterLink></li>
-            <li><span v-on:click="logout()">Odjava</span></li>
+            <li v-on:click="navigate('dokumenti')">Dokumenti</li>
+            <li v-on:click="navigate('profil')">Profil</li>
+            <li v-on:click="logout()">Odjava</li>
         </Authenticated>
     </ul>
 </template>
+
+<style scoped>
+ul {
+    list-style-type: none;
+    width: var(--nav-width);
+    position: fixed;
+    overflow: hidden;
+}
+
+ul li {
+    padding: var(--main-padding);
+    border-right: var(--border);
+    border-bottom: var(--border);
+}
+
+ul li:hover {
+    background-color: var(--main-color);
+}
+</style>
