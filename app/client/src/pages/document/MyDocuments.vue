@@ -7,6 +7,10 @@ import DocumentList from "./DocumentList.vue";
 const authController = new AuthController();
 const router = useRouter();
 
+const navigate = (path) => {
+    router.push(path);
+}
+
 onMounted(async () => {
     if (!authController.isAuthenticated()) {
         router.push({ name: 'prijava' });
@@ -17,6 +21,9 @@ onMounted(async () => {
 
 <template>
     <h2>Moji dokumenti</h2>
-    <RouterLink to="/documents/create">Stvori novi dokument</RouterLink>
-    <DocumentList path="vlasnik" />
+    <div class="content">
+        <button v-on:click="navigate('/documents/create')">Stvori novi dokument</button>
+        <div style="height: var(--form-space);"></div>
+        <DocumentList path="vlasnik" />
+    </div>
 </template>
