@@ -12,6 +12,7 @@ import Configuration from "./config/config.mjs";
 
 var config;
 
+// Ako se port mijenja ovdje, potrebno je promijenitu i u ./client/index.html! (i client iznad i buildan client)
 const port = 12345;
 const currentModuleURL = import.meta.url;
 const currentModulePath = fileURLToPath(currentModuleURL);
@@ -106,4 +107,11 @@ function restServices() {
     server.get("/api/roles", restRole.getRoles);
 }
 
-function serveClient() {}
+function serveClient() {
+    server.use(express.static("./client"));
+
+    server.get("*", (req, res) => {
+        res.sendFile(path.resolve(directory, "./client/index.html"));
+    });
+
+}

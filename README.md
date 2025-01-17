@@ -11,3 +11,7 @@ Ovaj projekt je licenciran pod GNU GPLv3. Detalje možete pronaći u datoteci `L
 ## Upotreba
 
 Slobodni ste koristiti, mijenjati i distribuirati ovaj projekt pod uvjetima GNU GPLv3 licence.
+
+#### Ostalo
+
+Slika na pozadini aplikacije preuzeta je sa sljedeće poveznice: https://pixabay.com/photos/cortina-dampezzo-mountain-italy-9307295/
