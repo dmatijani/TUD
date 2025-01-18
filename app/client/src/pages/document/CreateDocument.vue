@@ -221,7 +221,7 @@ const submitForm = async () => {
                         <table>
                             <tr>
                                 <td colspan="6" class="form-center">
-                                    <h3>Dodijeli pravo korištenja pojedinim korisnicima</h3>
+                                    <h3>Dodijeli pravo korištenja pojedinim grupama</h3>
                                 </td>
                             </tr>
                             <tr v-for="(groupValue, groupIndex) in groupsToShare">
