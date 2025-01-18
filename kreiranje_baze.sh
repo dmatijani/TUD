@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Po potrebi prije izvršavanja skripte pokrenuti: 'chmod +x kreiranje_baze.sh'
-# Skriptu izvršiti sa: './kreiranje_baze.sh'
+# Skriptu izvršiti sa: './kreiranje_baze.sh', po potrebi sa 'sudo ./kreiranje_baze.sh'
 # Po potrebi promijeniti naziv baze ovdje:
 DB_NAME="tud" # Ako se podaci promijene ovdje, potrebno je u datoteci './app/server/config/config.json' također ažurirati podatke!
 
