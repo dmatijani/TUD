@@ -9,7 +9,7 @@ Postgres: https://www.postgresql.org/
 NodeJS: https://nodejs.org/en
 
 Konkretne verzije koje su se koristile kod ovog projekta su Node v22.13.0 i Postgres 14.15.
-Postgres je takav kakav je instaliran kroz skriptu [instalacije.sh](http://dragon.foi.hr/foi24/instalacije.sh'), pripremljene za izvođenje laboratorijskih vježbi na kolegiju 'Teorija baza podataka'.
+Postgres je takav kakav je instaliran kroz skriptu [instalacije.sh](http://dragon.foi.hr/foi24/instalacije.sh), pripremljene za izvođenje laboratorijskih vježbi na kolegiju 'Teorija baza podataka'.
 
 Upute za instalaciju možete naći na internetu ili službenim stranicama.
 
